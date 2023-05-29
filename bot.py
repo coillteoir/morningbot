@@ -46,7 +46,7 @@ async def on_message(message):
         return
     string = message.content
     string = string.lower()
-    if time.localtime().tm_hour >= 6 and time.localtime().tm_hour <= 23:
+    if time.localtime().tm_hour >= 6 and time.localtime().tm_hour <= 12:
         if string == "bad morning":
             print("bad morning detected")
             await message.add_reaction("🤬")
