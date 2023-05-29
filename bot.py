@@ -1,7 +1,5 @@
 #!/bin/python3
 
-import os
-import sys
 import time
 import discord
 from leaderboard import LeaderBoard
