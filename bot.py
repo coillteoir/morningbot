@@ -53,7 +53,7 @@ async def on_message(message):
             return
 
         for x in good_mornings:
-            if string in x:
+            if x in string:
                 print("gm detected", message.content)
                 await message.add_reaction("☀️")
                 return
