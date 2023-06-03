@@ -2,7 +2,6 @@
 
 import time
 import discord
-from leaderboard import LeaderBoard
 
 intents = discord.Intents.default()
 intents.message_content = True
