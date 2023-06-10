@@ -50,8 +50,7 @@ async def on_message(message):
             await message.add_reaction("🤬")
             return
 
-        for x in good_mornings:
-            if x in string:
-                print("gm detected", message.content)
-                await message.add_reaction("☀️")
-                return
+        if any(element in string for element in good_mornings):
+            print("gm detected", message.content)
+            await message.add_reaction("☀️")
+            return
