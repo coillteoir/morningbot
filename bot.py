@@ -43,10 +43,9 @@ async def on_message(message):
     if message.author == client.user:
         await message.add_reaction("☀️")
         return
-    string = message.content
-    string = string.lower()
+    string = message.content.casefold()
     if time.localtime().tm_hour >= 6 and time.localtime().tm_hour <= 12:
-        if  "bad morning" in string:
+        if "bad morning" in string:
             print("bad morning detected")
             await message.add_reaction("🤬")
             return
