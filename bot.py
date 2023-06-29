@@ -2,10 +2,65 @@
 
 import time
 import discord
+from discord.ext import tasks, commands
+import requests
+from datetime import date, timedelta, datetime
 
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
+
+
+channel_id = 1053499749443059814
+
+
+
+# Get weather, using weatherapi.com
+key = "REPLACE WITH weatherapi.com KEY"
+response = requests.get(f"http://api.weatherapi.com/v1/forecast.json?key={key}&q=Dublin&days=1&aqi=no&alerts=no")
+data = response.json()
+forecast = data["forecast"]["forecastday"][0]
+max_temp_celsius = forecast["day"]["maxtemp_c"]
+min_temp_celsius = forecast["day"]["mintemp_c"]
+conditions = forecast["day"]["condition"]["text"]
+weather_icon_URL = forecast["day"]["condition"]["icon"]
+
+
+# Get news, using newsapi.org
+key = "REPLACE WITH newsapi.org KEY"
+# response = requests.get(f"https://newsapi.org/v2/top-headlines?country=ie&apiKey={key}") NORMAL NEWS
+response = requests.get(f"https://newsapi.org/v2/top-headlines?country=ie&category=technology&apiKey={key}") # TECH NEWS
+data = response.json()
+articles = data["articles"]
+headline_one = articles[0]["title"]
+headline_two = articles[1]["title"]
+headline_three = articles[2]["title"]
+
+
+def getVideo():
+    #Get fireship vids, using Youtube Data API v3
+    key = "REPLACE WITH Youtube Data API v3 KEY"
+    channel_ID = "UCsBjURrPoezykLs9EqgamOA"
+
+    # Get today's date
+    today = date.today()
+    # Calculate yesterday's date
+    yesterday = today - timedelta(days=1)
+
+    url = f"https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={channel_ID}&type=video&order=date&maxResults=1&publishedAfter={yesterday}T23:00:00Z&key={key}"
+    response = requests.get(url)
+    data = response.json()
+    try:
+        video_title = data["items"][0]["snippet"]["title"]
+    except:
+        video_title = "No video today :("
+
+    print(video_title)
+    return video_title
+
+
+
+
 
 good_mornings = [
     "good morning",
@@ -58,10 +113,10 @@ gmGifs = [
     "https://tenor.com/view/good-morning-gif-25798053"
     ]
 
-
 @client.event
 async def on_ready():
     print("We have logged in as {0.user}".format(client))
+    send_message.start()
     
 
 @client.event
@@ -73,16 +128,26 @@ async def on_message(message):
 
     if time.localtime().tm_hour >= 6 and time.localtime().tm_hour <= 12:
         if "bad morning" in string:
-            print("bad morning detected")
-            await message.add_reaction("🤬")
-            return
+                print("bad morning detected")
+                await message.add_reaction("🤬")
+                return
 
         if any(element in string for element in good_mornings):
-            print(f"gm detected > \"{message.content}\" by {message.author}")
-            await message.add_reaction("☀️")
+                print(f"gm detected > \"{message.content}\" by {message.author}")
+                await message.add_reaction("☀️")
+                return
 
-            matched_index = next((index for index, element in enumerate(good_mornings) if element in string), None)
-            print(f"Matched element position: {matched_index}")
 
-            await message.channel.send(f"Good morning, {message.author.mention}! \n {gmGifs[matched_index]}")
-            return
+# CALL EVERY HOUR
+@tasks.loop(hours=1)
+async def send_message():
+    print(time.localtime().tm_hour)
+    if time.localtime().tm_hour == 6:
+        channel = client.get_channel(channel_id)
+        print(channel)
+        embed=discord.Embed(title="Good Morning!", 
+                                description=f"**Todays weather in Dublin:**\n{conditions}\nmin: {min_temp_celsius}c\nmax: {max_temp_celsius}c\n\n**Todays News:**\n{headline_one}\n\n{headline_two}\n\n{headline_three}\n\n**Fireship Videos:**\n{getVideo()}\n\n**Have a great day!**", 
+                                color=0x00ff00)
+        embed.set_thumbnail(url=F"https:{weather_icon_URL}")
+        embed.set_image(url=gmGifs[0])
+        await channel.send(embed=embed)
