@@ -9,7 +9,7 @@ When deploying, you may choose to deploy as a container, or deploy directly to y
 ### Installation
 1. Clone the repository
 ```bash
-git clone
+git clone https://github.com/davidlynch-sd/MorningBot
 ```
 
 2. 🚀 Install the dependencies.
