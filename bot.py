@@ -32,7 +32,8 @@ def getNews():
     # Get news, using newsapi.org
     key = "REPLACE WITH newsapi.org KEY"
     # response = requests.get(f"https://newsapi.org/v2/top-headlines?country=ie&apiKey={key}") NORMAL NEWS
-    response = requests.get(f"https://newsapi.org/v2/top-headlines?country=ie&category=technology&apiKey={key}") # TECH NEWS
+    #https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey={key} Tech crunch, maybe better headlines idk. Hopefully sorting by popularity will filter the clickbaity viagra articles
+    response = requests.get(f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={key}") # TECH NEWS
     data = response.json()
     articles = data["articles"]
     headline_one = articles[0]["title"]
@@ -155,7 +156,7 @@ async def send_message():
         channel = client.get_channel(channel_id)
         print(channel)
         embed=discord.Embed(title="Good Morning!", 
-                                description=f"**Todays weather in Dublin:**\n{weatherData[2]}\nmin: {weatherData[1]}c\nmax: {weatherData[0]}c\n\n**Todays News:**\n{newsData[0]}\n\n{newsData[1]}\n\n{newsData[2]}\n\n**Fireship Videos:**\n{getVideo()}\n\n**Have a great day!**", 
+                                description=f"**Todays weather in Dublin:**\n{weatherData[2]}\nmin: {weatherData[1]}c\nmax: {weatherData[0]}c\n\n**Todays News:**\n{newsData[0]}\n\n{newsData[1]}\n\n{newsData[2]}\n\n**Have a great day!**", 
                                 color=0x00ff00)
         embed.set_thumbnail(url=F"https:{weatherData[3]}")
         embed.set_image(url=gmGifs[0])
