@@ -1,9 +1,9 @@
 serverName: CS++
-channelID: 123456
-morningEmoji: "" 
-badEmoji: ""
+channelID: 1053499749443059814
+morningEmoji: "☀️ "
+badEmoji: "🤬"
 easterEggs:
 - string: "Cheesed to meet you"
-  emoji: "cheese emoji here"
+  emoji: "🧀"
 - string: "good corning"
-  emoji: "corn emoji"
+  emoji: "🌽"

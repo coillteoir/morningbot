@@ -2,6 +2,7 @@
 
 import time
 import random
+import yaml
 
 import discord
 from discord.ext import tasks, commands
@@ -14,7 +15,6 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 
-channel_id = 1053499749443059814
 
 
 
@@ -70,9 +70,11 @@ def getVideo():
 
 morningFP = open("config/mornings.txt", "r")
 gifFP = open("config/gmGifs.txt", "r")
+configFP = open("config/configuration.yaml", "r")
 
 good_mornings = morningFP.readlines()
 gmGifs = gifFP.readlines()
+botConfig = yaml.safe_load(configFP)
 
 for i in range(len(good_mornings)):
     good_mornings[i] = good_mornings[i].strip('\n')
@@ -91,19 +93,22 @@ async def on_message(message):
     if message.author == client.user:
         await message.add_reaction("☀️")
         return
-    string = message.content.casefold()
+    contents = message.content.casefold()
 
     if time.localtime().tm_hour >= 6 and time.localtime().tm_hour <= 12:
-        if "bad morning" in string:
+        if "bad morning" in contents:
                 print("bad morning detected")
                 await message.add_reaction("🤬")
                 return
 
-        if any(element in string for element in good_mornings):
+        if any(element in contents for element in good_mornings):
                 print(f"gm detected > \"{message.content}\" by {message.author}")
                 await message.add_reaction("☀️")
                 return
-
+    for egg in botConfig["easterEggs"]:
+        if egg["string"] in contents:
+            await message.add_reaction(egg["emoji"])
+    
 
 # CALL EVERY HOUR
 @tasks.loop(hours=1)
@@ -114,9 +119,9 @@ async def send_message():
         weatherData = getWeather()
         newsData = getNews()
 
-        channel = client.get_channel(channel_id)
+        channel = client.get_channel(botConfig["channelID"])
         print(channel)
-        embed=discord.Embed(title="Good Morning!", 
+        embed=discord.Embed(title="Good Morning," + botConfig["serverName"] + "!", 
                                 description=f"**Todays weather in Dublin:**\n{weatherData[2]}\nmin: {weatherData[1]}c\nmax: {weatherData[0]}c\n\n**Todays News:**\n{newsData[0]}\n\n{newsData[1]}\n\n{newsData[2]}\n\n**Have a great day!**", 
                                 color=0x00ff00)
         embed.set_thumbnail(url=F"https:{weatherData[3]}")
