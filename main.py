@@ -2,9 +2,10 @@ import bot
 import sys
 
 def main():
-    token = open("token", "r")
-    bot.client.run(token.read()) 
-    token.close()
+    tp = open("token", "r")
+    token = tp.read()
+    tp.close()
+    bot.client.run(token) 
 
 if __name__ == "__main__":
     main()
