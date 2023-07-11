@@ -27,7 +27,7 @@ pip install -r requirements.txt
 python3 main.py
 ```
 
-5. 🐳 Build the container.
+5. 🐳 Build the image.
 
 ```bash
 docker build -t morningbot .
