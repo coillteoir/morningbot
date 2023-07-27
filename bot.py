@@ -3,7 +3,6 @@
 import time
 import random
 import json
-from typing import Final
 
 import discord
 from discord.ext import tasks, commands
@@ -70,7 +69,7 @@ def getVideo():
 
 
 with open('config/configuration_data.json') as f:
-    configuration_data: Final[dict[str, list[str] | dict[str, str] | str | int]] = json.loads(f.read())
+    configuration_data = json.loads(f.read())
 
 @client.event
 async def on_ready():
