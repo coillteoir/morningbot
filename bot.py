@@ -2,7 +2,8 @@
 
 import time
 import random
-import yaml
+import yaml, json
+from typing import Final
 
 import discord
 from discord.ext import tasks, commands
@@ -68,19 +69,13 @@ def getVideo():
     return video_title
 
 
-morningFP = open("config/mornings.txt", "r")
-gifFP = open("config/gmGifs.txt", "r")
+with open('config/good_morning_data.json') as f:
+    good_morning_data: Final[dict[str, list[str]]] = json.loads(f.read())
+good_mornings: Final[list[str]] = good_morning_data["good_morning_words"]
+good_morning_gifs: Final[list[str]] = good_morning_data["good_morning_gif_urls"]
+
 configFP = open("config/configuration.yaml", "r")
-
-good_mornings = morningFP.readlines()
-gmGifs = gifFP.readlines()
 botConfig = yaml.safe_load(configFP)
-
-for i in range(len(good_mornings)):
-    good_mornings[i] = good_mornings[i].strip('\n')
-
-for i in range(len(gmGifs)):
-    gmGifs[i] = gmGifs[i].strip('\n')
 
 @client.event
 async def on_ready():
@@ -125,5 +120,5 @@ async def send_message():
                                 description=f"**Todays weather in Dublin:**\n{weatherData[2]}\nmin: {weatherData[1]}c\nmax: {weatherData[0]}c\n\n**Todays News:**\n{newsData[0]}\n\n{newsData[1]}\n\n{newsData[2]}\n\n**Have a great day!**", 
                                 color=0x00ff00)
         embed.set_thumbnail(url=F"https:{weatherData[3]}")
-        embed.set_image(url=random.choice(gmGifs))
+        embed.set_image(url=random.choice(good_morning_gifs))
         await channel.send(embed=embed)
