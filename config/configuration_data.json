@@ -1,5 +1,9 @@
 {
-  "good_morning_words": [
+  "server_name": "CS++",
+  "channel_id": 1053499749443059814,
+  "morning_emoji":  "☀️ ",
+  "bad_morning_emoji": "🤬",
+  "good_morning_phrases": [
     "good morning",
     "maidin mhaith",
     "gm",
@@ -45,5 +49,12 @@
     "https://media0.giphy.com/media/f66sq76KfkDCKoxYSV/giphy.gif",
     "https://i.pinimg.com/originals/16/27/71/162771b373fc94042ec3e0e3615c0db1.gif",
     "https://tenor.com/view/good-morning-gif-25798053"
-  ]
+  ],
+  "easter_egg_phrases": {
+    "cheesed to meet you": "🧀",
+    "good corning": "🌽",
+    "mroning": "🤡",
+    "programmer socks": "🤤",
+    "guys being dudes": "👨‍❤️‍💋‍👨"
+  }
 }
