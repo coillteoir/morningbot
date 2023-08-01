@@ -2,13 +2,13 @@
 
 import time
 import random
-import yaml
+import json
 
 import discord
 from discord.ext import tasks, commands
 
 import requests
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -68,19 +68,8 @@ def getVideo():
     return video_title
 
 
-morningFP = open("config/mornings.txt", "r")
-gifFP = open("config/gmGifs.txt", "r")
-configFP = open("config/configuration.yaml", "r")
-
-good_mornings = morningFP.readlines()
-gmGifs = gifFP.readlines()
-botConfig = yaml.safe_load(configFP)
-
-for i in range(len(good_mornings)):
-    good_mornings[i] = good_mornings[i].strip('\n')
-
-for i in range(len(gmGifs)):
-    gmGifs[i] = gmGifs[i].strip('\n')
+with open('config/configuration_data.json') as f:
+    configuration_data = json.loads(f.read())
 
 @client.event
 async def on_ready():
@@ -101,13 +90,13 @@ async def on_message(message):
                 await message.add_reaction("🤬")
                 return
 
-        if any(element in contents for element in good_mornings):
+        if any(element in contents for element in configuration_data["good_morning_phrases"]):
                 print(f"gm detected > \"{message.content}\" by {message.author}")
                 await message.add_reaction("☀️")
                 return
-    for egg in botConfig["easterEggs"]:
-        if egg["string"] in contents:
-            await message.add_reaction(egg["emoji"])
+    for egg_phrase in configuration_data["easter_egg_phrases"].keys():
+        if egg_phrase in contents:
+            await message.add_reaction(configuration_data["easter_egg_phrases"][egg_phrase])
     
 
 # CALL EVERY HOUR
@@ -119,11 +108,11 @@ async def send_message():
         weatherData = getWeather()
         newsData = getNews()
 
-        channel = client.get_channel(botConfig["channelID"])
+        channel = client.get_channel(configuration_data["channel_id"])
         print(channel)
-        embed=discord.Embed(title="Good Morning," + botConfig["serverName"] + "!", 
+        embed=discord.Embed(title="Good Morning," + configuration_data["server_name"] + "!",
                                 description=f"**Todays weather in Dublin:**\n{weatherData[2]}\nmin: {weatherData[1]}c\nmax: {weatherData[0]}c\n\n**Todays News:**\n{newsData[0]}\n\n{newsData[1]}\n\n{newsData[2]}\n\n**Have a great day!**", 
                                 color=0x00ff00)
         embed.set_thumbnail(url=F"https:{weatherData[3]}")
-        embed.set_image(url=random.choice(gmGifs))
+        embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
