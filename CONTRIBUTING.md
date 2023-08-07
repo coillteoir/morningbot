@@ -1,5 +1,15 @@
 # MorningBot Contribution Guidelines
 
+## Creating a PR
+1. Fork the repo
+2. Make your changes in master or other branch
+3. Open a PR via the github UI
+4. Write a concise title
+5. Write a good description
+6. Sit back and wait for review
+7. Accept constructive feedback and comments
+8. Get it merged :)
+
 ## General PR Guidelines
 - PRs need a title that gives maintainers an idea of the changes being made at a first glance
 - Descriptions should explain what the pr is doing, why it's needed and how it's being done. Your PR won't be looked at if these criteria aren't met.
