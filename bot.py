@@ -7,6 +7,8 @@ import json
 import discord
 from discord.ext import tasks, commands
 
+import leaderboard
+
 import requests
 from datetime import date, timedelta
 
