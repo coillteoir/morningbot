@@ -1,6 +1,11 @@
 # MorningBot
 
-MorningBot is a Discord Bot built for CS++'s Discord Server. It reacts to all morning messages and has other fun features like leaderboards and hidden reacts.
+MorningBot is a Discord Bot which allows admins to reward users for wishing eachother good morning. Since every server is unique morningbot allows admins to configure the bot and run it themselves. There is a base configuraion which serves as an example and is used in the main instance of morningbot. 
+
+## Planned features
+- Leaderboard functionality
+- Leaderboard winner gets a custom role
+- Multi-channel config for more expressive bots.
 
 ## Installation, Deployment and Development
 
