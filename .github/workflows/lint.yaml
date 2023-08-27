@@ -13,6 +13,6 @@ jobs:
        uses: sunnysid3up/python-linter@master
        with:
          source: "."
-         mypy-options: "--ignore-missing-imports --show-error-codes"
+         mypy-options: ""
          pylint-options: "--rcfile=setup.cfg"
          isort-options: "-w 100"
