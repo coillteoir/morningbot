@@ -18,7 +18,9 @@ client = discord.Client(intents=intents)
 def getWeather():
     # Get weather, using weatherapi.com
     key = "REPLACE WITH weatherapi.com KEY"
-    response = requests.get(f"http://api.weatherapi.com/v1/forecast.json?key={key}&q=Dublin&days=1&aqi=no&alerts=no")
+    response = requests.get(
+        f"http://api.weatherapi.com/v1/forecast.json?key={key}&q=Dublin&days=1&aqi=no&alerts=no"
+    )
     data = response.json()
     forecast = data["forecast"]["forecastday"][0]
     max_temp_celsius = forecast["day"]["maxtemp_c"]
