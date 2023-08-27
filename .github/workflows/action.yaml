@@ -11,7 +11,7 @@ inputs:
   strict:
     description: "Set strictness for lint [low, medium, high]"
     required: false
-    default: "high"
+    default: ""
   mypy-options:
     description: "Mypy options"
     required: false
