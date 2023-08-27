@@ -14,6 +14,6 @@ jobs:
        with:
          source: "."
          mypy-options: "--ignore-missing-imports --show-error-codes"
-         pylint-options: "--rcfile=setup.cfg"
+         pylint-options: ""
          isort-options: "-w 100 --verbose"
          black-options: "--diff"
