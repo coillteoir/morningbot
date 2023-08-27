@@ -14,7 +14,7 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 
-def getWeather():
+def get_weather():
     # Get weather, using weatherapi.com
     key = "REPLACE WITH weatherapi.com KEY"
     response = requests.get(
@@ -30,11 +30,12 @@ def getWeather():
     return max_temp_celsius, min_temp_celsius, conditions, weather_icon_URL
 
 
-def getNews():
+def get_news():
     # Get news, using newsapi.org
     key = "REPLACE WITH newsapi.org KEY"
-    # response = requests.get(f"https://newsapi.org/v2/top-headlines?country=ie&apiKey={key}") NORMAL NEWS
-    # https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey={key} Tech crunch, maybe better headlines idk. Hopefully sorting by popularity will filter the clickbaity viagra articles
+    # response = requests.get(f"https://newsapi.org/v2/top-headlines?country=ie&apiKey={key}")
+    # https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey={key}
+    #Tech crunch, maybe better headlines idk. Hopefully sorting by popularity
     response = requests.get(
         f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={key}"
     )  # TECH NEWS
@@ -47,35 +48,13 @@ def getNews():
     return headline_one, headline_two, headline_three
 
 
-def getVideo():
-    # Get fireship vids, using Youtube Data API v3
-    key = "REPLACE WITH Youtube Data API v3 KEY"
-    channel_ID = "UCsBjURrPoezykLs9EqgamOA"
-
-    # Get today's date
-    today = date.today()
-    # Calculate yesterday's date
-    yesterday = today - timedelta(days=1)
-
-    url = f"https://www.googleapis.com/youtube/v3/search?part=snippet&channelId={channel_ID}&type=video&order=date&maxResults=1&publishedAfter={yesterday}T23:00:00Z&key={key}"
-    response = requests.get(url)
-    data = response.json()
-    try:
-        video_title = data["items"][0]["snippet"]["title"]
-    except:
-        video_title = "No video today :("
-
-    print(video_title)
-    return video_title
-
-
-with open("config/configuration_data.json") as f:
-    configuration_data = json.loads(f.read())
+with open("config/configuration_data.json", "r") as config_file:
+    configuration_data = json.loads(config_file.read())
 
 
 @client.event
 async def on_ready():
-    print("We have logged in as {0.user}".format(client))
+    print(f"We have logged in as {client.user}")
     send_message.start()
 
 
@@ -111,16 +90,16 @@ async def on_message(message):
 async def send_message():
     print(time.localtime().tm_hour)
     if time.localtime().tm_hour == 6:
-        weatherData = getWeather()
-        newsData = getNews()
+        weather_data = get_weather()
+        news_data = get_news()
 
         channel = client.get_channel(configuration_data["channel_id"])
         print(channel)
         embed = discord.Embed(
             title="Good Morning," + configuration_data["server_name"] + "!",
-            description=f"**Todays weather in Dublin:**\n{weatherData[2]}\nmin: {weatherData[1]}c\nmax: {weatherData[0]}c\n\n**Todays News:**\n{newsData[0]}\n\n{newsData[1]}\n\n{newsData[2]}\n\n**Have a great day!**",
+            description=f"**Todays weather in Dublin:**\n{weather_data[2]}\nmin: {weather_data[1]}c\nmax: {weather_data[0]}c\n\n**Todays News:**\n{news_data[0]}\n\n{news_data[1]}\n\n{news_data[2]}\n\n**Have a great day!**",
             color=0x00FF00,
         )
-        embed.set_thumbnail(url=f"https:{weatherData[3]}")
+        embed.set_thumbnail(url=f"https:{weather_data[3]}")
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
