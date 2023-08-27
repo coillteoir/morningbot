@@ -1,14 +1,13 @@
 #!/bin/python3
 
-import time
-import random
 import json
+import random
+import time
+from datetime import date, timedelta
 
 import discord
-from discord.ext import tasks, commands
-
 import requests
-from datetime import date, timedelta
+from discord.ext import commands, tasks
 
 intents = discord.Intents.default()
 intents.message_content = True

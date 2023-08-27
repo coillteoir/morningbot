@@ -1,5 +1,6 @@
-import bot
 import sys
+
+import bot
 
 
 def main():
