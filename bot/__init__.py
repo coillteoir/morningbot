@@ -35,7 +35,7 @@ def get_news():
     key = "REPLACE WITH newsapi.org KEY"
     # response = requests.get(f"https://newsapi.org/v2/top-headlines?country=ie&apiKey={key}")
     # https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey={key}
-    #Tech crunch, maybe better headlines idk. Hopefully sorting by popularity
+    # Tech crunch, maybe better headlines idk. Hopefully sorting by popularity
     response = requests.get(
         f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={key}"
     )  # TECH NEWS
