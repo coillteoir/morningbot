@@ -8,7 +8,8 @@ jobs:
       - run: ls -la
       - run: echo "Job triggered by ${{ github.event_name }} event."
       - run: sudo apt update
-      - run: sudo apt install black isort pylint
+      - run: sudo apt install black isort pylint pip
+      - run: pip install pyenchant
       - run: echo "Packages installed"
       - uses: actions/checkout@v3
       - run: echo "Checked out into ${{ github.repository }} on branch ${{ github.ref }}"
