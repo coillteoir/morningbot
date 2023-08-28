@@ -12,6 +12,7 @@ jobs:
       - run: pip install pyenchant
       - run: echo "Packages installed"
       - uses: actions/checkout@v3
+      - run: pip install -r requirements.txt
       - run: echo "Checked out into ${{ github.repository }} on branch ${{ github.ref }}"
       - run: ls
       - run: black . --diff
