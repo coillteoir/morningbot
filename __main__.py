@@ -1,5 +1,4 @@
 import bot
-import sys
 
 
 def main():
