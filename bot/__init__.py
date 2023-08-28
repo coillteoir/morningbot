@@ -51,12 +51,6 @@ with open("config/configuration_data.json", "r", encoding="utf-8") as config_fil
     configuration_data = json.loads(config_file.read())
 
 
-leaderboard1 = leaderboard.Leaderboard(configuration_data["channel_id"])
-leaderboard1.add_point("david")
-leaderboard1.add_point("david")
-leaderboard1.add_point("david")
-leaderboard1.add_point("david")
-
 @client.event
 async def on_ready():
     print(f"We have logged in as {client.user}")
