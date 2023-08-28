@@ -5,14 +5,11 @@ jobs:
   Lint:
     runs-on: ubuntu-latest
     steps:
-      - run: whoami
-      - run: sudo su
       - run: echo "Job triggered by ${{ github.event_name }} event."
       - run: sudo apt update
       - run: sudo apt install black isort pylint
       - run: echo "Packages installed"
-      - name: Checkout repo
-        run: actions/checkout@v3
+      - run: actions/checkout@v3
       - run: echo "Checked out into ${{ github.repository }} on branch ${{ github.ref }}"
       - run: black .
       - run: pylint --recursive y
