@@ -1,0 +1,16 @@
+name: Test-Lint
+run-name: ${{ github.actor }} PR being linted for code cleanliness
+on: [pull_request]
+jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Job triggered by ${{ github.event_name }} event."
+      - run: apt update
+      - run: apt install black isort pylint
+      - run: echo "Packages installed"
+      - name: Checkout repo
+        run: actions/checkout@v3
+      - run: echo "Checked out into ${{ github.repository }} on branch ${{ github.ref }}"
+      - run: black .
+      - run: pylint --recursive y
