@@ -2,8 +2,8 @@ import bot
 
 
 def main():
-    with open("token", "r") as tp:
-        token = tp.read()
+    with open("token", "r", encoding="utf-8") as token_pointer:
+        token = token_pointer.read()
         bot.client.run(token)
 
 
