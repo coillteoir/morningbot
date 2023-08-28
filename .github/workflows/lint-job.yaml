@@ -1,0 +1,19 @@
+name: Test-Lint
+run-name: ${{ github.actor }} PR being linted for code cleanliness
+on: [pull_request]
+jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ls -la
+      - run: echo "Job triggered by ${{ github.event_name }} event."
+      - run: sudo apt update
+      - run: sudo apt install black isort pylint pip
+      - run: pip install pyenchant
+      - run: echo "Packages installed"
+      - uses: actions/checkout@v3
+      - run: pip install -r requirements.txt
+      - run: echo "Checked out into ${{ github.repository }} on branch ${{ github.ref }}"
+      - run: ls
+      - run: black . --diff
+      - run: pylint __main__.py bot --rcfile=.pylintrc
