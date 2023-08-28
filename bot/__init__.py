@@ -5,11 +5,11 @@ import random
 import time
 from datetime import date, timedelta
 
-import leaderboard
-
 import discord
 import requests
 from discord.ext import commands, tasks
+
+import leaderboard
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
