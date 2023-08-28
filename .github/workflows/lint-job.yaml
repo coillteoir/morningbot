@@ -13,5 +13,5 @@ jobs:
       - run: echo "Packages installed"
       - uses: actions/checkout@v3
       - run: echo "Checked out into ${{ github.repository }} on branch ${{ github.ref }}"
-      - run: black .
+      - run: black . --diff
       - run: pylint . --rcfile=./.pylintrc
