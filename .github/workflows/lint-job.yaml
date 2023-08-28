@@ -8,8 +8,8 @@ jobs:
       - run: whoami
       - run: sudo su
       - run: echo "Job triggered by ${{ github.event_name }} event."
-      - run: apt update
-      - run: apt install black isort pylint
+      - run: sudo apt update
+      - run: sudo apt install black isort pylint
       - run: echo "Packages installed"
       - name: Checkout repo
         run: actions/checkout@v3
