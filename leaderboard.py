@@ -7,7 +7,6 @@ import os
 
 
 class Leaderboard:
-
     class Member:
         def __init__(self, name, mornings):
             self.name = name
@@ -25,4 +24,3 @@ class Leaderboard:
                 self.members.append(self.Member(x["name"], x["mornings"]))
         else:
             self.channel = channel
-

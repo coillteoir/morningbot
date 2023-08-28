@@ -18,7 +18,7 @@ def get_weather():
     key = "REPLACE WITH weatherapi.com KEY"
     response = requests.get(
         f"http://api.weatherapi.com/v1/forecast.json?key={key}&q=Dublin&days=1&aqi=no&alerts=no",
-        timeout=10
+        timeout=10,
     )
     data = response.json()
     forecast = data["forecast"]["forecastday"][0]
@@ -34,7 +34,7 @@ def get_news():
     key = "REPLACE WITH newsapi.org KEY"
     response = requests.get(
         f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={key}",
-        timeout=10
+        timeout=10,
     )  # TECH NEWS
     data = response.json()
     articles = data["articles"]
@@ -94,15 +94,17 @@ async def send_message():
         print(channel)
         embed = discord.Embed(
             title="Good Morning," + configuration_data["server_name"] + "!",
-            description=("**Todays weather in Dublin:**\n"+
-                         f"{weather_data[2]}\n"+
-                         f"min: {weather_data[1]}c\n"+
-                         f"max: {weather_data[0]}c\n\n"+
-                         "**Todays News:**\n"+
-                         f"{news_data[0]}\n\n"+
-                         f"{news_data[1]}\n\n"+
-                         f"{news_data[2]}\n\n"+
-                         "**Have a great day!**"),
+            description=(
+                "**Todays weather in Dublin:**\n"
+                + f"{weather_data[2]}\n"
+                + f"min: {weather_data[1]}c\n"
+                + f"max: {weather_data[0]}c\n\n"
+                + "**Todays News:**\n"
+                + f"{news_data[0]}\n\n"
+                + f"{news_data[1]}\n\n"
+                + f"{news_data[2]}\n\n"
+                + "**Have a great day!**"
+            ),
             color=0x00FF00,
         )
         embed.set_thumbnail(url=f"https:{weather_data[3]}")
