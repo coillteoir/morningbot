@@ -5,6 +5,8 @@ jobs:
   Lint:
     runs-on: ubuntu-latest
     steps:
+      - run: whoami
+      - run: sudo su
       - run: echo "Job triggered by ${{ github.event_name }} event."
       - run: apt update
       - run: apt install black isort pylint
