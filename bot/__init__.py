@@ -2,6 +2,8 @@
 
 import json
 import random
+import signal
+import sys
 import time
 from datetime import date, timedelta
 
@@ -62,7 +64,6 @@ server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
 
 @client.event
 async def on_message(message):
-    global server_leaders
     if message.author == client.user:
         await message.add_reaction("☀️")
         server_leaders.add_point(message.author)
@@ -92,7 +93,6 @@ async def on_message(message):
 # CALL EVERY HOUR
 @tasks.loop(hours=1)
 async def send_message():
-    global server_leaders
     print(time.localtime().tm_hour)
     channel = client.get_channel(configuration_data["channel_id"])
     server_name = configuration_data["server_name"]
@@ -141,3 +141,11 @@ async def send_message():
             )
         )
         await channel.send(embed=embed)
+
+
+def sighandle_exit(sig, frame):
+    print("Exiting using handler")
+    server_leaders.dump_data()
+    sys.exit()
+
+signal.signal(signal.SIGINT, sighandle_exit)
