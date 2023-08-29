@@ -144,6 +144,7 @@ async def send_message():
 
 
 def sighandle_exit(sig, frame):
+    print(sig, frame)
     print("Exiting using handler")
     server_leaders.dump_data()
     sys.exit()
