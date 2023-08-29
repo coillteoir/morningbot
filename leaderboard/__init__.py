@@ -18,7 +18,7 @@ class Leaderboard:
     def __init__(self, channel):
         print("LEADERBOARD INIT")
         self.channel = channel
-        path = f"config/{self.channel}leaderboard.json"
+        path = f"config/leaderboards/{self.channel}-leaderboard.json"
         print(path)
 
         self.members = []
@@ -49,7 +49,7 @@ class Leaderboard:
             print(f"Created: {name}")
 
     def dump_data(self):
-        path = f"config/{self.channel}leaderboard.json"
+        path = f"config/leaderboards/{self.channel}-leaderboard.json"
 
         member_list = list(map(lambda x: x.__dict__, self.members))
 
