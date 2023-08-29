@@ -57,10 +57,15 @@ async def on_ready():
     send_message.start()
 
 
+server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
+
+
 @client.event
 async def on_message(message):
+    global server_leaders
     if message.author == client.user:
         await message.add_reaction("☀️")
+        server_leaders.add_point(message.author)
         return
     contents = message.content.casefold()
 
@@ -87,7 +92,10 @@ async def on_message(message):
 # CALL EVERY HOUR
 @tasks.loop(hours=1)
 async def send_message():
+    global server_leaders
     print(time.localtime().tm_hour)
+    channel = client.get_channel(configuration_data["channel_id"])
+    server_name = configuration_data["server_name"]
     if time.localtime().tm_hour == 6:
         weather_data = get_weather()
         news_data = get_news()
@@ -95,7 +103,7 @@ async def send_message():
         channel = client.get_channel(configuration_data["channel_id"])
         print(channel)
         embed = discord.Embed(
-            title="Good Morning," + configuration_data["server_name"] + "!",
+            title="Good Morning," + server_name + "!",
             description=(
                 "**Todays weather in Dublin:**\n"
                 + f"{weather_data[2]}\n"
@@ -111,4 +119,25 @@ async def send_message():
         )
         embed.set_thumbnail(url=f"https:{weather_data[3]}")
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
+        await channel.send(embed=embed)
+    if time.localtime().tm_hour == 13:
+        print(f"sending leaderboard message to :{channel}")
+        embed = discord.Embed(
+            title=f"Good Afternoon {server_name}!",
+            description=f"The good morning as of are: {server_leaders.members}",
+        )
+        embed.set_thumbnail(
+            url=(
+                "https://media.istockphoto.com/"
+                + "id/615429424/vector/sun-icon-vector-illustration.jpg"
+                + "?s=170667a&w=0&k=20&c=q9uxeAZMsn6FHHRdN8bpGaygIFwmpsAroyN1BKc5mbs="
+            )
+        )
+        embed.set_image(
+            url=(
+                "https://media.istockphoto.com/"
+                + "id/615429424/vector/sun-icon-vector-illustration.jpg"
+                + "?s=170667a&w=0&k=20&c=q9uxeAZMsn6FHHRdN8bpGaygIFwmpsAroyN1BKc5mbs="
+            )
+        )
         await channel.send(embed=embed)
