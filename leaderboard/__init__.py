@@ -4,6 +4,7 @@
 
 import json
 import os
+import time
 
 
 class Leaderboard:
@@ -11,9 +12,15 @@ class Leaderboard:
         def __init__(self, name, mornings):
             self.name = name
             self.mornings = mornings
+            self.last_morning = time.gmtime(0)
 
         def __str__(self):
             return f"NAME: {self.name} SCORE: {self.mornings}"
+
+        def inc(self):
+            temp_time = time.localtime()
+            if temp_time.tm_yday != self.last_morning.tm_yday:
+                self.mornings += 1
 
     def __init__(self, channel):
         print("LEADERBOARD INIT")
@@ -41,7 +48,7 @@ class Leaderboard:
     def add_point(self, name):
         for member in self.members:
             if member.name == name:
-                member.mornings += 1
+                member.inc()
                 print("exists", member)
                 break
         else:
