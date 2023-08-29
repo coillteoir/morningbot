@@ -15,9 +15,6 @@ class Leaderboard:
         def __str__(self):
             return f"NAME: {self.name} SCORE: {self.mornings}"
 
-        def __dict__(self):
-            return {"name": self.name, "mornings": self.mornings}
-
     def __init__(self, channel):
         print("LEADERBOARD INIT")
         self.channel = channel
@@ -27,16 +24,16 @@ class Leaderboard:
         self.members = []
         if os.path.isfile(path):
             with open(path, "r", encoding="utf-8") as leader_file:
-                leader_dict = json.loads(leader_file)
+                leader_dict = json.load(leader_file)
             self.channel = leader_dict["channel"]
 
-            for member in leader_dict:
+            for member in leader_dict["members"]:
                 self.members.append(self.Member(member["name"], member["mornings"]))
         else:
             self.channel = channel
 
     def __str__(self):
-        value = ""
+        value = f"CHANNEL {self.channel}\n"
         for member in self.members:
             value += str(member) + "\n"
         return value
@@ -49,9 +46,14 @@ class Leaderboard:
                 break
         else:
             self.members.append(self.Member(name, 1))
-            for member in self.members:
-                print("created", member)
+            print(f"Created: {name}")
 
     def dump_data(self):
         path = f"config/{self.channel}leaderboard.json"
-        print(path)
+
+        member_list = list(map(lambda x: x.__dict__, self.members))
+
+        leader_dict = {"channel": self.channel, "members": member_list}
+
+        with open(path, "w+", encoding="utf-8") as dump_file:
+            json.dump(leader_dict, dump_file)
