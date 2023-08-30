@@ -151,3 +151,4 @@ def sighandle_exit(sig, frame):
 
 
 signal.signal(signal.SIGINT, sighandle_exit)
+signal.signal(signal.SIGTERM, sighandle_exit)
