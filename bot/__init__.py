@@ -1,39 +1,6 @@
 #!/bin/python3
 
-import json
-import random
-import time
-from datetime import date, timedelta
-
-import discord
-import requests
-from discord.ext import commands, tasks
-
-intents = discord.Intents.default()
-intents.message_content = True
-client = discord.Client(intents=intents)
-
-
-def get_weather():
-    # Get weather, using weatherapi.com
-    key = "REPLACE WITH weatherapi.com KEY"
-    response = requests.get(
-        f"http://api.weatherapi.com/v1/forecast.json?key={key}&q=Dublin&days=1&aqi=no&alerts=no",
-        timeout=10
-    )
-    data = response.json()
-    forecast = data["forecast"]["forecastday"][0]
-    max_temp_celsius = forecast["day"]["maxtemp_c"]
-    min_temp_celsius = forecast["day"]["mintemp_c"]
-    conditions = forecast["day"]["condition"]["text"]
-    weather_icon_url = forecast["day"]["condition"]["icon"]
-
-    return max_temp_celsius, min_temp_celsius, conditions, weather_icon_url
-
-
-def get_news():
-    key = "REPLACE WITH newsapi.org KEY"
-    response = requests.get(
+im
         f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={key}",
         timeout=10
     )  # TECH NEWS
