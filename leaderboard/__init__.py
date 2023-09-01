@@ -23,7 +23,7 @@ class Leaderboard:
             return self.mornings < other.mornings
 
         def __str__(self):
-            return f"NAME: {self.name} SCORE: {self.mornings}"
+            return f"{self.name}: {self.mornings}"
 
     def __init__(self, channel):
         print("LEADERBOARD INIT")
@@ -45,8 +45,9 @@ class Leaderboard:
     def __str__(self):
         value = ""
         self.members.sort()
-        for member in self.members:
-            value += str(member) + "\n"
+        self.members.reverse()
+        for index, member in enumerate(self.members):
+            value += f"{index}. {str(member)}\n"        
         return value
 
     def add_point(self, name):
