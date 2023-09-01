@@ -127,20 +127,6 @@ async def send_message():
             title=f"Good Afternoon {server_name}!",
             description=f"The good morning as of are: {server_leaders.members}",
         )
-        embed.set_thumbnail(
-            url=(
-                "https://media.istockphoto.com/"
-                + "id/615429424/vector/sun-icon-vector-illustration.jpg"
-                + "?s=170667a&w=0&k=20&c=q9uxeAZMsn6FHHRdN8bpGaygIFwmpsAroyN1BKc5mbs="
-            )
-        )
-        embed.set_image(
-            url=(
-                "https://media.istockphoto.com/"
-                + "id/615429424/vector/sun-icon-vector-illustration.jpg"
-                + "?s=170667a&w=0&k=20&c=q9uxeAZMsn6FHHRdN8bpGaygIFwmpsAroyN1BKc5mbs="
-            )
-        )
         await channel.send(embed=embed)
 
 
