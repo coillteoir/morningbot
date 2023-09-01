@@ -67,7 +67,6 @@ server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
 async def on_message(message):
     if message.author == client.user:
         await message.add_reaction("☀️")
-        server_leaders.add_point(message.author)
         return
     contents = message.content.casefold()
 
@@ -83,6 +82,7 @@ async def on_message(message):
         ):
             print(f'gm detected > "{message.content}" by {message.author}')
             await message.add_reaction("☀️")
+            server_leaders.add_point(message.author)
             return
     for egg_phrase in configuration_data["easter_egg_phrases"].keys():
         if egg_phrase in contents:
@@ -121,6 +121,7 @@ async def send_message():
         embed.set_thumbnail(url=f"https:{weather_data[3]}")
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
+
     if time.localtime().tm_hour == 13:
         print(f"sending leaderboard message to :{channel}")
         embed = discord.Embed(
