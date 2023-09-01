@@ -125,7 +125,7 @@ async def send_message():
         print(f"sending leaderboard message to :{channel}")
         embed = discord.Embed(
             title=f"Good Afternoon {server_name}!",
-            description=f"The good morning as of are: {server_leaders.members}",
+            description=f"The good morning as of are:\n {server_leaders}",
         )
         await channel.send(embed=embed)
 
