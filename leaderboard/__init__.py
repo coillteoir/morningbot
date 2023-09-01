@@ -14,17 +14,17 @@ class Leaderboard:
             self.mornings = mornings
             self.last_morning = time.gmtime(0)
 
-
         def inc(self):
             temp_time = time.localtime()
             if temp_time.tm_yday != self.last_morning.tm_yday:
                 self.mornings += 1
-        
+
         def __lt__(self, other):
             return self.mornings < other.mornings
 
         def __str__(self):
             return f"NAME: {self.name} SCORE: {self.mornings}"
+
     def __init__(self, channel):
         print("LEADERBOARD INIT")
         self.channel = channel
@@ -43,7 +43,8 @@ class Leaderboard:
             self.channel = channel
 
     def __str__(self):
-        value = f"CHANNEL {self.channel}\n"
+        value = ""
+        self.members.sort()
         for member in self.members:
             value += str(member) + "\n"
         return value
