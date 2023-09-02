@@ -46,38 +46,41 @@ docker run -d --name morningbot morningbot
 
 
 ### Current supported Languages
-"good morning" - English
-"maidin mhaith" - Irish
-"buenos días" - Spanish
-"bonjour" - French
-"guten morgen" - German
-"buongiorno" - Italian
-"bom dia" - Portuguese
-"доброе утро" - Russian
-"早上好" - Chinese
-"おはようございます" - Japanese
-"좋은 아침입니다" - Korean
-"صباح الخير" - Arabic
-"सुप्रभात" - Hindi
-"habari za asubuhi" - Swahili
-"καλημέρα" - Greek
-"günaydın" - Turkish
-"god morgon" - Swedish
-"dzień dobry" - Polish
-"בוקר טוב" - Hebrew
-"สวัสดีตอนเช้า" - Thai
-"hyvää huomenta" - Finnish
-"god morgen" - Norwegian
-"buna dimineata" - Romanian
-"bore da" - Hausa
-"beyanî baş" - Kurdish
-"bonum mane" - Latin
-"dobro jutro" - Croatian
-"dobré ráno" - Czech
-"dobrý deň" - Slovak
-"labas rytas" - Lithuanian
-"labrīt" - Latvian
-"magandang umaga" - Fillipino
-"ata mārie" - Maori
-"chào buổi sáng" - Vietnamese
-"өглөөний мэнд" - Mongolian
+
+|      Phrase       |    Origin     |  
+|-------------------|:-------------:|
+| good morning      |  English      | 
+| maidin mhaith     |  Irish        |  
+| buenos días       |  Spanish      |
+| bonjour           |  French       | 
+| guten morgen      |  German       |  
+| buongiorno        |  Italian      |
+| bom dia           |  Portuguese   | 
+| доброе утро       |  Russian      |  
+| 早上好            |  Chinese      |
+| おはようございます |  Japanese     | 
+| 좋은 아침입니다    |  Korean       |  
+| صباح الخير       |  Arabic       |
+| सुप्रभात            |   Hindi       | 
+| habari za asubuhi |  Swahili      |  
+| καλημέρα          |  Greek        |
+| günaydın          |  Turkish      | 
+| god morgon        |  Swedish      |  
+| dzień dobry       |  Polish       |
+| בוקר טוב         |  Hebrew       | 
+| สวัสดีตอนเช้า        |  Thai         |  
+| hyvää huomenta    |  Finnish      |
+| god morgen        |  Norwegian    | 
+| buna dimineata    |  Romanian     |  
+| bore da           |  Hausa        |
+| beyanî baş        |  Kurdish      | 
+| bonum mane        |  Latin        |  
+| dobro jutro       |  Croatian     |
+| dobré ráno        |  Czech        |  
+| dobrý deň         |  Slovak       |
+| labas rytas       |  Lithuanian   | 
+| labrīt            |  Latvian      |  
+| magandang umaga   |  Fillipino    |
+| ata mārie         |  Maori        | 
+| chào buổi sáng    |  Vietnamese   |  
+| өглөөний мэнд     |  Mongolian    |
