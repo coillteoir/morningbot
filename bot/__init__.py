@@ -3,11 +3,12 @@
 import json
 import random
 import time
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 import discord
 import requests
 from discord.ext import commands, tasks
+import pytz
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -49,6 +50,7 @@ def get_news():
 with open("config/configuration_data.json", "r", encoding="utf-8") as config_file:
     configuration_data = json.loads(config_file.read())
 
+timezone = pytz.timezone(configuration_data["timezone"])
 
 @client.event
 async def on_ready():
@@ -63,7 +65,7 @@ async def on_message(message):
         return
     contents = message.content.casefold()
 
-    if time.localtime().tm_hour >= 6 and time.localtime().tm_hour <= 12:
+    if int(int(datetime.now(timezone).strftime("%H"))) >= 6 and int(int(datetime.now(timezone).strftime("%H"))) <= 12:
         if "bad morning" in contents:
             print("bad morning detected")
             await message.add_reaction("🤬")
@@ -86,8 +88,8 @@ async def on_message(message):
 # CALL EVERY HOUR
 @tasks.loop(hours=1)
 async def send_message():
-    print(time.localtime().tm_hour)
-    if time.localtime().tm_hour == 6:
+    print(int(datetime.now(timezone).strftime("%H")))
+    if int(datetime.now(timezone).strftime("%H")) == 6:
         weather_data = get_weather()
         news_data = get_news()
 
