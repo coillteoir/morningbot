@@ -51,6 +51,7 @@ with open("config/configuration_data.json", "r", encoding="utf-8") as config_fil
     configuration_data = json.loads(config_file.read())
 
 timezone = pytz.timezone(configuration_data["timezone"])
+current_hour = int(datetime.now(timezone).strftime("%H"))
 
 @client.event
 async def on_ready():
@@ -65,7 +66,6 @@ async def on_message(message):
         return
     contents = message.content.casefold()
 
-    current_hour = int(datetime.now(timezone).strftime("%H"))
     if 6 <= current_hour <= 12:
         if "bad morning" in contents:
             print("bad morning detected")
@@ -79,6 +79,7 @@ async def on_message(message):
             print(f'gm detected > "{message.content}" by {message.author}')
             await message.add_reaction("☀️")
             return
+
     for egg_phrase in configuration_data["easter_egg_phrases"].keys():
         if egg_phrase in contents:
             await message.add_reaction(
@@ -112,4 +113,3 @@ async def send_message():
         embed.set_thumbnail(url=f"https:{weather_data[3]}")
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
-        
