@@ -65,7 +65,8 @@ async def on_message(message):
         return
     contents = message.content.casefold()
 
-    if int(int(datetime.now(timezone).strftime("%H"))) >= 6 and int(int(datetime.now(timezone).strftime("%H"))) <= 12:
+    current_hour = int(datetime.now(timezone).strftime("%H"))
+    if 6 <= current_hour <= 12:
         if "bad morning" in contents:
             print("bad morning detected")
             await message.add_reaction("🤬")
@@ -111,3 +112,4 @@ async def send_message():
         embed.set_thumbnail(url=f"https:{weather_data[3]}")
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
+        
