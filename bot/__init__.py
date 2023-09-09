@@ -3,12 +3,12 @@
 import json
 import random
 import time
-from datetime import date, timedelta, datetime
+from datetime import date, datetime, timedelta
 
 import discord
+import pytz
 import requests
 from discord.ext import commands, tasks
-import pytz
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -20,7 +20,7 @@ def get_weather():
     key = "REPLACE WITH weatherapi.com KEY"
     response = requests.get(
         f"http://api.weatherapi.com/v1/forecast.json?key={key}&q=Dublin&days=1&aqi=no&alerts=no",
-        timeout=10
+        timeout=10,
     )
     data = response.json()
     forecast = data["forecast"]["forecastday"][0]
@@ -36,7 +36,7 @@ def get_news():
     key = "REPLACE WITH newsapi.org KEY"
     response = requests.get(
         f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={key}",
-        timeout=10
+        timeout=10,
     )  # TECH NEWS
     data = response.json()
     articles = data["articles"]
@@ -52,6 +52,7 @@ with open("config/configuration_data.json", "r", encoding="utf-8") as config_fil
 
 timezone = pytz.timezone(configuration_data["timezone"])
 current_hour = int(datetime.now(timezone).strftime("%H"))
+
 
 @client.event
 async def on_ready():
@@ -99,15 +100,17 @@ async def send_message():
         print(channel)
         embed = discord.Embed(
             title="Good Morning," + configuration_data["server_name"] + "!",
-            description=("**Todays weather in Dublin:**\n"+
-                         f"{weather_data[2]}\n"+
-                         f"min: {weather_data[1]}c\n"+
-                         f"max: {weather_data[0]}c\n\n"+
-                         "**Todays News:**\n"+
-                         f"{news_data[0]}\n\n"+
-                         f"{news_data[1]}\n\n"+
-                         f"{news_data[2]}\n\n"+
-                         "**Have a great day!**"),
+            description=(
+                "**Todays weather in Dublin:**\n"
+                + f"{weather_data[2]}\n"
+                + f"min: {weather_data[1]}c\n"
+                + f"max: {weather_data[0]}c\n\n"
+                + "**Todays News:**\n"
+                + f"{news_data[0]}\n\n"
+                + f"{news_data[1]}\n\n"
+                + f"{news_data[2]}\n\n"
+                + "**Have a great day!**"
+            ),
             color=0x00FF00,
         )
         embed.set_thumbnail(url=f"https:{weather_data[3]}")
