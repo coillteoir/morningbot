@@ -29,7 +29,7 @@ pip install -r requirements.txt
 4. 🚀 Run the bot.
 
 ```bash
-python3 __main__.py
+python3 .
 ```
 
 5. 🐳 Build the image.
