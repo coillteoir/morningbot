@@ -55,7 +55,7 @@ current_hour = int(datetime.now(timezone).strftime("%H"))
 
 @client.event
 async def on_ready():
-    print(f"We have logged in as {client.user}")
+    print(f"We have logged in as {client.user}, time is {current_hour}")
     send_message.start()
 
 
@@ -90,8 +90,8 @@ async def on_message(message):
 # CALL EVERY HOUR
 @tasks.loop(hours=1)
 async def send_message():
-    print(int(datetime.now(timezone).strftime("%H")))
-    if int(datetime.now(timezone).strftime("%H")) == 6:
+    print(current_hour)
+    if current_hour == 6:
         weather_data = get_weather()
         news_data = get_news()
 
