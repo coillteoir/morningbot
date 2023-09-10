@@ -14,7 +14,6 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
-
 def get_weather():
     # Get weather, using weatherapi.com
     key = "REPLACE WITH weatherapi.com KEY"
@@ -62,9 +61,12 @@ async def on_ready():
     print(f"We have logged in as {client.user}, time is {get_current_hour()}")
     send_message.start()
 
-
+firstGM = False
+firstGM_user = None
 @client.event
 async def on_message(message):
+    global firstGM
+    global firstGM_user
     if message.author == client.user:
         await message.add_reaction("☀️")
         return
@@ -81,14 +83,27 @@ async def on_message(message):
             for element in configuration_data["good_morning_phrases"]
         ):
             print(f'gm detected > "{message.content}" by {message.author}')
+            if(firstGM == False):
+                firstGM_user = message.author
+                firstGM = True
+                await message.add_reaction("🌅")
+                return
             await message.add_reaction("☀️")
             return
+    else:
+        # Reset early bird every day
+        firstGM = False
+        firstGM_user = None
 
     for egg_phrase in configuration_data["easter_egg_phrases"].keys():
         if egg_phrase in contents:
             await message.add_reaction(
                 configuration_data["easter_egg_phrases"][egg_phrase]
             )
+
+    if "first user debug" in contents:
+        await message.channel.send(f"firstGM_user: {firstGM_user}\nfirstGM: {firstGM}")
+
 
 
 # CALL EVERY HOUR
@@ -117,5 +132,21 @@ async def send_message():
             color=0x00FF00,
         )
         embed.set_thumbnail(url=f"https:{weather_data[3]}")
+        embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
+        await channel.send(embed=embed)
+
+    if(get_current_hour() == 9):  
+        # If theres no early bird, dont send the message
+        if(firstGM == False):
+            return
+        
+        channel = client.get_channel(configuration_data["channel_id"])
+        embed = discord.Embed(
+        title="Good Afternoon," + configuration_data["server_name"] + "!",
+        description=(
+            "Todays early bird was " + firstGM_user + "!\n\n"
+            ),
+            color=0x00FF00,
+        )
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
