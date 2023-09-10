@@ -51,12 +51,15 @@ with open("config/configuration_data.json", "r", encoding="utf-8") as config_fil
     configuration_data = json.loads(config_file.read())
 
 timezone = pytz.timezone(configuration_data["timezone"])
-current_hour = int(datetime.now(timezone).strftime("%H"))
+
+
+def get_current_hour():
+    return int(datetime.now(timezone).strftime("%H"))
 
 
 @client.event
 async def on_ready():
-    print(f"We have logged in as {client.user}, time is {current_hour}")
+    print(f"We have logged in as {client.user}, time is {get_current_hour()}")
     send_message.start()
 
 
@@ -67,7 +70,7 @@ async def on_message(message):
         return
     contents = message.content.casefold()
 
-    if 6 <= current_hour <= 12:
+    if 6 <= get_current_hour() <= 12:
         if "bad morning" in contents:
             print("bad morning detected")
             await message.add_reaction("🤬")
@@ -91,8 +94,8 @@ async def on_message(message):
 # CALL EVERY HOUR
 @tasks.loop(hours=1)
 async def send_message():
-    print(current_hour)
-    if current_hour == 6:
+    print(get_current_hour())
+    if get_current_hour() == 6:
         weather_data = get_weather()
         news_data = get_news()
 
