@@ -83,7 +83,7 @@ async def on_message(message):
             for element in configuration_data["good_morning_phrases"]
         ):
             print(f'gm detected > "{message.content}" by {message.author}')
-            if(firstGM == False):
+            if(firstGM is False):
                 firstGM_user = message.author
                 firstGM = True
                 await message.add_reaction("🌅")
@@ -135,9 +135,9 @@ async def send_message():
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
 
-    if(get_current_hour() == 9):  
+    if(get_current_hour() == 13):  
         # If theres no early bird, dont send the message
-        if(firstGM == False):
+        if(firstGM is False):
             return
         
         channel = client.get_channel(configuration_data["channel_id"])
