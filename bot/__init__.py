@@ -90,10 +90,6 @@ async def on_message(message):
                 return
             await message.add_reaction("☀️")
             return
-    else:
-        # Reset early bird every day
-        FIRST_GM = False
-        FIRST_GM_USER = None
 
     for egg_phrase in configuration_data["easter_egg_phrases"].keys():
         if egg_phrase in contents:
@@ -101,8 +97,11 @@ async def on_message(message):
                 configuration_data["easter_egg_phrases"][egg_phrase]
             )
 
-    if "first user debug" in contents:
-        await message.channel.send(f"FIRST_GM_USER: {FIRST_GM_USER}\nFIRST_GM: {FIRST_GM}")
+    #if contents == "first user debug":
+    #    await message.channel.send(f"FIRST_GM_USER: {FIRST_GM_USER}\nFIRST_GM: {FIRST_GM}")
+    
+    #if contents == 'full debug':
+    #    await message.channel.send(f"FIRST_GM_USER: {FIRST_GM_USER}\nFIRST_GM: {FIRST_GM}\nCurrent Hour: {get_current_hour()}\ntimezone: {timezone}")
 
 
 
@@ -150,3 +149,7 @@ async def send_message():
         )
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
+
+        # Reset early bird every day
+        FIRST_GM = False
+        FIRST_GM_USER = None
