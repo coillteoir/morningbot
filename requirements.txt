@@ -1,1 +1,3 @@
 discord
+pytz
+requests

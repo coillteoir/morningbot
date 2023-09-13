@@ -3,9 +3,10 @@
 import json
 import random
 import time
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 import discord
+import pytz
 import requests
 from discord.ext import commands, tasks
 
@@ -19,7 +20,7 @@ def get_weather():
     key = "REPLACE WITH weatherapi.com KEY"
     response = requests.get(
         f"http://api.weatherapi.com/v1/forecast.json?key={key}&q=Dublin&days=1&aqi=no&alerts=no",
-        timeout=10
+        timeout=10,
     )
     data = response.json()
     forecast = data["forecast"]["forecastday"][0]
@@ -35,7 +36,7 @@ def get_news():
     key = "REPLACE WITH newsapi.org KEY"
     response = requests.get(
         f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={key}",
-        timeout=10
+        timeout=10,
     )  # TECH NEWS
     data = response.json()
     articles = data["articles"]
@@ -49,21 +50,33 @@ def get_news():
 with open("config/configuration_data.json", "r", encoding="utf-8") as config_file:
     configuration_data = json.loads(config_file.read())
 
+timezone = pytz.timezone(configuration_data["timezone"])
+
+
+def get_current_hour():
+    return int(datetime.now(timezone).strftime("%H"))
+
 
 @client.event
 async def on_ready():
-    print(f"We have logged in as {client.user}")
+    print(f"We have logged in as {client.user}, time is {get_current_hour()}")
     send_message.start()
+
+
+FIRST_GM = False
+FIRST_GM_USER = None
 
 
 @client.event
 async def on_message(message):
+    global FIRST_GM
+    global FIRST_GM_USER
     if message.author == client.user:
         await message.add_reaction("☀️")
         return
     contents = message.content.casefold()
 
-    if time.localtime().tm_hour >= 6 and time.localtime().tm_hour <= 12:
+    if 6 <= get_current_hour() <= 12:
         if "bad morning" in contents:
             print("bad morning detected")
             await message.add_reaction("🤬")
@@ -74,8 +87,14 @@ async def on_message(message):
             for element in configuration_data["good_morning_phrases"]
         ):
             print(f'gm detected > "{message.content}" by {message.author}')
+            if FIRST_GM is False:
+                FIRST_GM_USER = message.author
+                FIRST_GM = True
+                await message.add_reaction("🌅")
+                return
             await message.add_reaction("☀️")
             return
+
     for egg_phrase in configuration_data["easter_egg_phrases"].keys():
         if egg_phrase in contents:
             await message.add_reaction(
@@ -86,8 +105,8 @@ async def on_message(message):
 # CALL EVERY HOUR
 @tasks.loop(hours=1)
 async def send_message():
-    print(time.localtime().tm_hour)
-    if time.localtime().tm_hour == 6:
+    print(get_current_hour())
+    if get_current_hour() == 6:
         weather_data = get_weather()
         news_data = get_news()
 
@@ -95,17 +114,38 @@ async def send_message():
         print(channel)
         embed = discord.Embed(
             title="Good Morning," + configuration_data["server_name"] + "!",
-            description=("**Todays weather in Dublin:**\n"+
-                         f"{weather_data[2]}\n"+
-                         f"min: {weather_data[1]}c\n"+
-                         f"max: {weather_data[0]}c\n\n"+
-                         "**Todays News:**\n"+
-                         f"{news_data[0]}\n\n"+
-                         f"{news_data[1]}\n\n"+
-                         f"{news_data[2]}\n\n"+
-                         "**Have a great day!**"),
+            description=(
+                "**Todays weather in Dublin:**\n"
+                + f"{weather_data[2]}\n"
+                + f"min: {weather_data[1]}c\n"
+                + f"max: {weather_data[0]}c\n\n"
+                + "**Todays News:**\n"
+                + f"{news_data[0]}\n\n"
+                + f"{news_data[1]}\n\n"
+                + f"{news_data[2]}\n\n"
+                + "**Have a great day!**"
+            ),
             color=0x00FF00,
         )
         embed.set_thumbnail(url=f"https:{weather_data[3]}")
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
+
+    if get_current_hour() == 13:
+        # If theres no early bird, dont send the message
+        if FIRST_GM is False:
+            return
+
+        channel = client.get_channel(configuration_data["channel_id"])
+        embed = discord.Embed(
+            title="Good Afternoon," + configuration_data["server_name"] + "!",
+            description=("Todays early bird was " + FIRST_GM_USER + "!\n\n"),
+            color=0x00FF00,
+        )
+        embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
+        await channel.send(embed=embed)
+
+        # Reset early bird every day
+
+        FIRST_GM = False
+        FIRST_GM_USER = None
