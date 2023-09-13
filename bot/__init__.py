@@ -14,6 +14,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
+
 def get_weather():
     # Get weather, using weatherapi.com
     key = "REPLACE WITH weatherapi.com KEY"
@@ -61,8 +62,11 @@ async def on_ready():
     print(f"We have logged in as {client.user}, time is {get_current_hour()}")
     send_message.start()
 
+
 FIRST_GM = False
 FIRST_GM_USER = None
+
+
 @client.event
 async def on_message(message):
     global FIRST_GM
@@ -96,13 +100,6 @@ async def on_message(message):
             await message.add_reaction(
                 configuration_data["easter_egg_phrases"][egg_phrase]
             )
-
-    #if contents == "first user debug":
-    #    await message.channel.send(f"FIRST_GM_USER: {FIRST_GM_USER}\nFIRST_GM: {FIRST_GM}")
-    
-    #if contents == 'full debug':
-    #    await message.channel.send(f"FIRST_GM_USER: {FIRST_GM_USER}\nFIRST_GM: {FIRST_GM}\nCurrent Hour: {get_current_hour()}\ntimezone: {timezone}")
-
 
 
 # CALL EVERY HOUR
@@ -141,15 +138,14 @@ async def send_message():
 
         channel = client.get_channel(configuration_data["channel_id"])
         embed = discord.Embed(
-        title="Good Afternoon," + configuration_data["server_name"] + "!",
-        description=(
-            "Todays early bird was " + FIRST_GM_USER + "!\n\n"
-            ),
+            title="Good Afternoon," + configuration_data["server_name"] + "!",
+            description=("Todays early bird was " + FIRST_GM_USER + "!\n\n"),
             color=0x00FF00,
         )
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
 
         # Reset early bird every day
+
         FIRST_GM = False
         FIRST_GM_USER = None
