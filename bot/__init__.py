@@ -65,7 +65,7 @@ def get_current_hour():
 @client.event
 async def on_ready():
     print(f"We have logged in as {client.user}, time is {get_current_hour()}")
-    schedule.every().day.at("6:00", timezone).do(send_weather)
+    schedule.every().day.at("06:00", timezone).do(send_weather)
     schedule.every().day.at("13:00", timezone).do(send_leaderboard)
 
 
