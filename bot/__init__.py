@@ -8,6 +8,7 @@ import time
 from datetime import date, datetime, timedelta
 
 import discord
+import schedule
 import pytz
 import requests
 from discord.ext import commands, tasks
@@ -64,7 +65,9 @@ def get_current_hour():
 @client.event
 async def on_ready():
     print(f"We have logged in as {client.user}, time is {get_current_hour()}")
-    send_message.start()
+    schedule.every().day.at("6:00", timezone).do(send_weather)
+    schedule.every().day.at("13:00", timezone).do(send_leaderboard)
+
 
 
 server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
@@ -110,7 +113,7 @@ async def on_message(message):
 
 # CALL EVERY HOUR
 @tasks.loop(hours=1)
-async def send_message():
+async def send_weather():
     channel = client.get_channel(configuration_data["channel_id"])
     server_name = configuration_data["server_name"]
     print(get_current_hour())
@@ -139,6 +142,8 @@ async def send_message():
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
 
+
+async def send_leaderboard():
     if get_current_hour() == 13:
         # If theres no early bird, dont send the message
         if FIRST_GM is False:

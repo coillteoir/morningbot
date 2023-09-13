@@ -47,7 +47,7 @@ class Leaderboard:
         self.members.sort()
         self.members.reverse()
         for index, member in enumerate(self.members):
-            value += f"{index}. {str(member)}\n"        
+            value += f"{index}. {str(member)}\n"
         return value
 
     def add_point(self, name):
