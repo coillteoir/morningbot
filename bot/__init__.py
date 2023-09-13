@@ -5,9 +5,10 @@ import random
 import signal
 import sys
 import time
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 import discord
+import pytz
 import requests
 from discord.ext import commands, tasks
 
@@ -53,24 +54,34 @@ def get_news():
 with open("config/configuration_data.json", "r", encoding="utf-8") as config_file:
     configuration_data = json.loads(config_file.read())
 
+timezone = pytz.timezone(configuration_data["timezone"])
+
+
+def get_current_hour():
+    return int(datetime.now(timezone).strftime("%H"))
+
 
 @client.event
 async def on_ready():
-    print(f"We have logged in as {client.user}")
+    print(f"We have logged in as {client.user}, time is {get_current_hour()}")
     send_message.start()
 
 
 server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
+FIRST_GM = False
+FIRST_GM_USER = None
 
 
 @client.event
 async def on_message(message):
+    global FIRST_GM
+    global FIRST_GM_USER
     if message.author == client.user:
         await message.add_reaction("☀️")
         return
     contents = message.content.casefold()
 
-    if time.localtime().tm_hour >= 6 and time.localtime().tm_hour <= 12:
+    if 6 <= get_current_hour() <= 12:
         if "bad morning" in contents:
             print("bad morning detected")
             await message.add_reaction("🤬")
@@ -81,9 +92,15 @@ async def on_message(message):
             for element in configuration_data["good_morning_phrases"]
         ):
             print(f'gm detected > "{message.content}" by {message.author}')
+            if FIRST_GM is False:
+                FIRST_GM_USER = message.author
+                FIRST_GM = True
+                await message.add_reaction("🌅")
+                return
             await message.add_reaction("☀️")
             server_leaders.add_point(message.author)
             return
+
     for egg_phrase in configuration_data["easter_egg_phrases"].keys():
         if egg_phrase in contents:
             await message.add_reaction(
@@ -94,10 +111,10 @@ async def on_message(message):
 # CALL EVERY HOUR
 @tasks.loop(hours=1)
 async def send_message():
-    print(time.localtime().tm_hour)
     channel = client.get_channel(configuration_data["channel_id"])
     server_name = configuration_data["server_name"]
-    if time.localtime().tm_hour == 6:
+    print(get_current_hour())
+    if get_current_hour() == 6:
         weather_data = get_weather()
         news_data = get_news()
 
@@ -122,13 +139,24 @@ async def send_message():
         embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
 
-    if time.localtime().tm_hour == 13:
-        print(f"sending leaderboard message to :{channel}")
+    if get_current_hour() == 13:
+        # If theres no early bird, dont send the message
+        if FIRST_GM is False:
+            return
+
+        channel = client.get_channel(configuration_data["channel_id"])
         embed = discord.Embed(
-            title=f"Good Afternoon {server_name}!",
-            description=f"The good morning as of are:\n {server_leaders}",
+            title="Good Afternoon," + configuration_data["server_name"] + "!",
+            description=("Todays early bird was " + FIRST_GM_USER + "!\n\n"),
+            color=0x00FF00,
         )
+        embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
         await channel.send(embed=embed)
+
+        # Reset early bird every day
+
+        FIRST_GM = False
+        FIRST_GM_USER = None
 
 
 def sighandle_exit(sig, frame):
