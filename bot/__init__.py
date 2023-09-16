@@ -10,15 +10,35 @@ import pytz
 import requests
 from discord.ext import commands, tasks
 
+import re
+
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
+# Get the configuration
+with open("config/configuration_data.json", "r", encoding="utf-8") as config_file:
+    configuration_data = json.loads(config_file.read())
+
+TIMEZONE = pytz.timezone(configuration_data["timezone"])
+MORNING_EMOJI = configuration_data["morning_emoji"]
+EARLY_EMOJI = configuration_data["early_emoji"]
+BAD_MORNING_EMOJI = configuration_data["bad_morning_emoji"]
+SERVER_NAME = configuration_data["server_name"]
+CHANNEL_ID = configuration_data["channel_id"]
+MORNING_GIFS = configuration_data["good_morning_gif_urls"]
+WEATHER_API_KEY = configuration_data["weather_api_key"]
+NEWS_API_KEY = configuration_data["news_api_key"]
+GOOD_MORNING_PHRASES = configuration_data["good_morning_phrases"]
+#debug_time = 9 # debug line >1
+
+pattern = r'^passx debug_time = (\d+)$'
+
+
 def get_weather():
     # Get weather, using weatherapi.com
-    key = "REPLACE WITH weatherapi.com KEY"
     response = requests.get(
-        f"http://api.weatherapi.com/v1/forecast.json?key={key}&q=Dublin&days=1&aqi=no&alerts=no",
+        f"http://api.weatherapi.com/v1/forecast.json?key={WEATHER_API_KEY}&q=Dublin&days=1&aqi=no&alerts=no",
         timeout=10,
     )
     data = response.json()
@@ -32,9 +52,8 @@ def get_weather():
 
 
 def get_news():
-    key = "REPLACE WITH newsapi.org KEY"
     response = requests.get(
-        f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={key}",
+        f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={NEWS_API_KEY}",
         timeout=10,
     )  # TECH NEWS
     data = response.json()
@@ -46,14 +65,9 @@ def get_news():
     return headline_one, headline_two, headline_three
 
 
-with open("config/configuration_data.json", "r", encoding="utf-8") as config_file:
-    configuration_data = json.loads(config_file.read())
-
-timezone = pytz.timezone(configuration_data["timezone"])
-
-
 def get_current_hour():
-    return int(datetime.now(timezone).strftime("%H"))
+    #return debug_time # debug line >1
+    return int(datetime.now(TIMEZONE).strftime("%H"))
 
 
 @client.event
@@ -68,27 +82,27 @@ async def on_message(message):
     global FIRST_GM
     global FIRST_GM_USER
     if message.author == client.user:
-        await message.add_reaction("☀️")
+        await message.add_reaction(MORNING_EMOJI)
         return
     contents = message.content.casefold()
 
     if 6 <= get_current_hour() <= 12:
         if "bad morning" in contents:
             print("bad morning detected")
-            await message.add_reaction("🤬")
+            await message.add_reaction(BAD_MORNING_EMOJI)
             return
 
         if any(
             element in contents
-            for element in configuration_data["good_morning_phrases"]
+            for element in GOOD_MORNING_PHRASES
         ):
             print(f'gm detected > "{message.content}" by {message.author}')
             if FIRST_GM is False:
                 FIRST_GM_USER = message.author
                 FIRST_GM = True
-                await message.add_reaction("🌅")
+                await message.add_reaction(EARLY_EMOJI)
                 return
-            await message.add_reaction("☀️")
+            await message.add_reaction(MORNING_EMOJI)
             return
 
     for egg_phrase in configuration_data["easter_egg_phrases"].keys():
@@ -97,26 +111,30 @@ async def on_message(message):
                 configuration_data["easter_egg_phrases"][egg_phrase]
             )
 
-    #if contents == "first user debug":
-    #    await message.channel.send(f"FIRST_GM_USER: {FIRST_GM_USER}\nFIRST_GM: {FIRST_GM}")
-    
-    #if contents == 'full debug':
-    #    await message.channel.send(f"FIRST_GM_USER: {FIRST_GM_USER}\nFIRST_GM: {FIRST_GM}\nCurrent Hour: {get_current_hour()}\ntimezone: {timezone}")
-
+    #if re.match(pattern, contents.lower()): # debug block >1
+        #extracted_number = re.match(pattern, contents.lower()).group(1)
+        #global debug_time
+        #debug_time = int(extracted_number)
+        #print(f"debug time changed to {extracted_number}")
+        #await message.channel.send(f"debug time changed to {extracted_number}")
+        
 
 
 # CALL EVERY HOUR
-@tasks.loop(hours=1)
+@tasks.loop(hours=1) 
 async def send_message():
+    global FIRST_GM
+    global FIRST_GM_USER
+
     print(get_current_hour())
     if get_current_hour() == 6:
         weather_data = get_weather()
         news_data = get_news()
 
-        channel = client.get_channel(configuration_data["channel_id"])
+        channel = client.get_channel(CHANNEL_ID)
         print(channel)
         embed = discord.Embed(
-            title="Good Morning," + configuration_data["server_name"] + "!",
+            title="Good Morning," + SERVER_NAME + "!",
             description=(
                 "**Todays weather in Dublin:**\n"
                 + f"{weather_data[2]}\n"
@@ -131,7 +149,7 @@ async def send_message():
             color=0x00FF00,
         )
         embed.set_thumbnail(url=f"https:{weather_data[3]}")
-        embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
+        embed.set_image(url=random.choice(MORNING_GIFS))
         await channel.send(embed=embed)
 
     if get_current_hour() == 13:
@@ -139,15 +157,15 @@ async def send_message():
         if FIRST_GM is False:
             return
 
-        channel = client.get_channel(configuration_data["channel_id"])
+        channel = client.get_channel(CHANNEL_ID)
         embed = discord.Embed(
-        title="Good Afternoon," + configuration_data["server_name"] + "!",
+        title="Good Afternoon," + SERVER_NAME + "!",
         description=(
-            "Todays early bird was " + FIRST_GM_USER + "!\n\n"
+            "Todays early bird was " + str(FIRST_GM_USER) + "!\n\n"
             ),
             color=0x00FF00,
         )
-        embed.set_image(url=random.choice(configuration_data["good_morning_gif_urls"]))
+        embed.set_image(url=random.choice(MORNING_GIFS))
         await channel.send(embed=embed)
 
         # Reset early bird every day
