@@ -75,8 +75,11 @@ async def on_ready():
     print(f"We have logged in as {client.user}, time is {get_current_hour()}")
     send_message.start()
 
+
 FIRST_GM = False
 FIRST_GM_USER = None
+
+
 @client.event
 async def on_message(message):
     global FIRST_GM
@@ -169,5 +172,6 @@ async def send_message():
         await channel.send(embed=embed)
 
         # Reset early bird every day
+
         FIRST_GM = False
         FIRST_GM_USER = None
