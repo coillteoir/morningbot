@@ -30,9 +30,12 @@ MORNING_GIFS = configuration_data["good_morning_gif_urls"]
 WEATHER_API_KEY = configuration_data["weather_api_key"]
 NEWS_API_KEY = configuration_data["news_api_key"]
 GOOD_MORNING_PHRASES = configuration_data["good_morning_phrases"]
-#debug_time = 9 # debug line >1
+DEBUG_MODE = configuration_data["debug_mode"]
+debug_time = 9 # debug line >1
+debug_minute = '01:00' # debug line >2
 
 pattern = r'^passx debug_time = (\d+)$'
+pattern2 = r'^passx debug_minute = (\d+:\d+)$'
 
 
 def get_weather():
@@ -66,9 +69,12 @@ def get_news():
 
 
 def get_current_hour():
-    #return debug_time # debug line >1
+    if DEBUG_MODE: return debug_time # debug line >1
     return int(datetime.now(TIMEZONE).strftime("%H"))
 
+def get_current_minute():
+    if DEBUG_MODE: return debug_minute # debug line >2
+    return str(datetime.now(TIMEZONE).strftime("%H:%M"))
 
 @client.event
 async def on_ready():
@@ -114,23 +120,33 @@ async def on_message(message):
                 configuration_data["easter_egg_phrases"][egg_phrase]
             )
 
-    #if re.match(pattern, contents.lower()): # debug block >1
-        #extracted_number = re.match(pattern, contents.lower()).group(1)
-        #global debug_time
-        #debug_time = int(extracted_number)
-        #print(f"debug time changed to {extracted_number}")
-        #await message.channel.send(f"debug time changed to {extracted_number}")
+            
+    if DEBUG_MODE:
+        if re.match(pattern, contents.lower()): # debug block >1
+            extracted_number = re.match(pattern, contents.lower()).group(1)
+            global debug_time
+            debug_time = int(extracted_number)
+            print(f"debug time changed to {extracted_number}")
+            await message.channel.send(f"debug time changed to {extracted_number}")
+
+        if re.match(pattern2, contents.lower()): # debug block >2
+            extracted_number = re.match(pattern2, contents.lower()).group(1)
+            global debug_minute
+            debug_minute = extracted_number
+            print(f"debug time changed to {extracted_number}")
+            await message.channel.send(f"debug minute changed to {extracted_number}")
+
+    
         
 
 
 # CALL EVERY HOUR
-@tasks.loop(hours=1) 
+@tasks.loop(seconds=60) 
 async def send_message():
     global FIRST_GM
     global FIRST_GM_USER
 
-    print(get_current_hour())
-    if get_current_hour() == 6:
+    if get_current_minute() == '06:00':
         weather_data = get_weather()
         news_data = get_news()
 
@@ -155,7 +171,7 @@ async def send_message():
         embed.set_image(url=random.choice(MORNING_GIFS))
         await channel.send(embed=embed)
 
-    if get_current_hour() == 13:
+    if get_current_minute() == "13:00":
         # If theres no early bird, dont send the message
         if FIRST_GM is False:
             return
