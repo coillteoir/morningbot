@@ -42,6 +42,7 @@ def get_weather():
     # Get weather, using weatherapi.com
     response = requests.get(
         f"http://api.weatherapi.com/v1/forecast.json?key={WEATHER_API_KEY}&q=Dublin&days=1&aqi=no&alerts=no",
+
         timeout=10,
     )
     data = response.json()
@@ -56,6 +57,7 @@ def get_weather():
 
 def get_news():
     response = requests.get(
+      
         f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={NEWS_API_KEY}",
         timeout=10,
     )  # TECH NEWS
@@ -72,9 +74,11 @@ def get_current_hour():
     if DEBUG_MODE: return debug_time # debug line >1
     return int(datetime.now(TIMEZONE).strftime("%H"))
 
+
 def get_current_minute():
     if DEBUG_MODE: return debug_minute # debug line >2
     return str(datetime.now(TIMEZONE).strftime("%H:%M"))
+
 
 @client.event
 async def on_ready():
@@ -109,9 +113,11 @@ async def on_message(message):
             if FIRST_GM is False:
                 FIRST_GM_USER = message.author
                 FIRST_GM = True
+
                 await message.add_reaction(EARLY_EMOJI)
                 return
             await message.add_reaction(MORNING_EMOJI)
+
             return
 
     for egg_phrase in configuration_data["easter_egg_phrases"].keys():
@@ -147,6 +153,7 @@ async def send_message():
     global FIRST_GM_USER
 
     if get_current_minute() == '06:00':
+
         weather_data = get_weather()
         news_data = get_news()
 
@@ -154,6 +161,7 @@ async def send_message():
         print(channel)
         embed = discord.Embed(
             title="Good Morning," + SERVER_NAME + "!",
+
             description=(
                 "**Todays weather in Dublin:**\n"
                 + f"{weather_data[2]}\n"
