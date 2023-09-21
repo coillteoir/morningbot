@@ -142,7 +142,7 @@ async def on_message(message):
 
 
 # CALL EVERY HOUR
-@tasks.loop(seconds=60) 
+@tasks.loop(seconds=60)
 async def send_message():
     global FIRST_GM
     global FIRST_GM_USER
