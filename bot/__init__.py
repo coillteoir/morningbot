@@ -4,13 +4,12 @@ import json
 import random
 import time
 from datetime import date, datetime, timedelta
+import re
 
 import discord
 import pytz
 import requests
 from discord.ext import commands, tasks
-
-import re
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -34,8 +33,8 @@ DEBUG_MODE = configuration_data["debug_mode"]
 debug_time = 9 # debug line >1
 debug_minute = '01:00' # debug line >2
 
-pattern = r'^passx debug_time = (\d+)$'
-pattern2 = r'^passx debug_minute = (\d+:\d+)$'
+PATTERN = r'^passx debug_time = (\d+)$'
+PATTERN2 = r'^passx debug_minute = (\d+:\d+)$'
 
 
 def get_weather():
@@ -57,7 +56,6 @@ def get_weather():
 
 def get_news():
     response = requests.get(
-      
         f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={NEWS_API_KEY}",
         timeout=10,
     )  # TECH NEWS
@@ -126,24 +124,21 @@ async def on_message(message):
                 configuration_data["easter_egg_phrases"][egg_phrase]
             )
 
-            
     if DEBUG_MODE:
-        if re.match(pattern, contents.lower()): # debug block >1
-            extracted_number = re.match(pattern, contents.lower()).group(1)
+        if re.match(PATTERN, contents.lower()): # debug block >1
+            extracted_number = re.match(PATTERN, contents.lower()).group(1)
             global debug_time
             debug_time = int(extracted_number)
             print(f"debug time changed to {extracted_number}")
             await message.channel.send(f"debug time changed to {extracted_number}")
 
-        if re.match(pattern2, contents.lower()): # debug block >2
-            extracted_number = re.match(pattern2, contents.lower()).group(1)
+        if re.match(PATTERN2, contents.lower()): # debug block >2
+            extracted_number = re.match(PATTERN2, contents.lower()).group(1)
             global debug_minute
             debug_minute = extracted_number
             print(f"debug time changed to {extracted_number}")
             await message.channel.send(f"debug minute changed to {extracted_number}")
 
-    
-        
 
 
 # CALL EVERY HOUR
