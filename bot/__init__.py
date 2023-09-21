@@ -30,18 +30,18 @@ WEATHER_API_KEY = configuration_data["weather_api_key"]
 NEWS_API_KEY = configuration_data["news_api_key"]
 GOOD_MORNING_PHRASES = configuration_data["good_morning_phrases"]
 DEBUG_MODE = configuration_data["debug_mode"]
-debug_time = 9 # debug line >1
-debug_minute = '01:00' # debug line >2
+DEBUG_TIME = 9  # debug line >1
+DEBUG_MINUTE = "01:00"  # debug line >2
 
-PATTERN = r'^passx debug_time = (\d+)$'
-PATTERN2 = r'^passx debug_minute = (\d+:\d+)$'
+PATTERN = r"^passx debug_time = (\d+)$"
+PATTERN2 = r"^passx debug_minute = (\d+:\d+)$"
 
 
 def get_weather():
     # Get weather, using weatherapi.com
     response = requests.get(
-        f"http://api.weatherapi.com/v1/forecast.json?key={WEATHER_API_KEY}&q=Dublin&days=1&aqi=no&alerts=no",
-
+        "http://api.weatherapi.com/v1/forecast.json?"
+        + f"key={WEATHER_API_KEY}&q=Dublin&days=1&aqi=no&alerts=no",
         timeout=10,
     )
     data = response.json()
@@ -56,7 +56,8 @@ def get_weather():
 
 def get_news():
     response = requests.get(
-        f"https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&apiKey={NEWS_API_KEY}",
+        "https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&api"
+        + f"Key={NEWS_API_KEY}",
         timeout=10,
     )  # TECH NEWS
     data = response.json()
@@ -69,12 +70,14 @@ def get_news():
 
 
 def get_current_hour():
-    if DEBUG_MODE: return debug_time # debug line >1
+    if DEBUG_MODE:
+        return DEBUG_TIME  # debug line >1
     return int(datetime.now(TIMEZONE).strftime("%H"))
 
 
 def get_current_minute():
-    if DEBUG_MODE: return debug_minute # debug line >2
+    if DEBUG_MODE:
+        return DEBUG_MINUTE  # debug line >2
     return str(datetime.now(TIMEZONE).strftime("%H:%M"))
 
 
@@ -103,10 +106,7 @@ async def on_message(message):
             await message.add_reaction(BAD_MORNING_EMOJI)
             return
 
-        if any(
-            element in contents
-            for element in GOOD_MORNING_PHRASES
-        ):
+        if any(element in contents for element in GOOD_MORNING_PHRASES):
             print(f'gm detected > "{message.content}" by {message.author}')
             if FIRST_GM is False:
                 FIRST_GM_USER = message.author
@@ -125,20 +125,19 @@ async def on_message(message):
             )
 
     if DEBUG_MODE:
-        if re.match(PATTERN, contents.lower()): # debug block >1
+        if re.match(PATTERN, contents.lower()):  # debug block >1
             extracted_number = re.match(PATTERN, contents.lower()).group(1)
-            global debug_time
-            debug_time = int(extracted_number)
+            global DEBUG_TIME
+            DEBUG_TIME = int(extracted_number)
             print(f"debug time changed to {extracted_number}")
             await message.channel.send(f"debug time changed to {extracted_number}")
 
-        if re.match(PATTERN2, contents.lower()): # debug block >2
+        if re.match(PATTERN2, contents.lower()):  # debug block >2
             extracted_number = re.match(PATTERN2, contents.lower()).group(1)
-            global debug_minute
-            debug_minute = extracted_number
+            global DEBUG_MINUTE
+            DEBUG_MINUTE = extracted_number
             print(f"debug time changed to {extracted_number}")
             await message.channel.send(f"debug minute changed to {extracted_number}")
-
 
 
 # CALL EVERY HOUR
@@ -147,8 +146,7 @@ async def send_message():
     global FIRST_GM
     global FIRST_GM_USER
 
-    if get_current_minute() == '06:00':
-
+    if get_current_minute() == "06:00":
         weather_data = get_weather()
         news_data = get_news()
 
@@ -156,7 +154,6 @@ async def send_message():
         print(channel)
         embed = discord.Embed(
             title="Good Morning," + SERVER_NAME + "!",
-
             description=(
                 "**Todays weather in Dublin:**\n"
                 + f"{weather_data[2]}\n"
@@ -181,10 +178,8 @@ async def send_message():
 
         channel = client.get_channel(CHANNEL_ID)
         embed = discord.Embed(
-        title="Good Afternoon," + SERVER_NAME + "!",
-        description=(
-            "Todays early bird was " + str(FIRST_GM_USER) + "!\n\n"
-            ),
+            title="Good Afternoon," + SERVER_NAME + "!",
+            description=("Todays early bird was " + str(FIRST_GM_USER) + "!\n\n"),
             color=0x00FF00,
         )
         embed.set_image(url=random.choice(MORNING_GIFS))
