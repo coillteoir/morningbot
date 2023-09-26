@@ -175,6 +175,8 @@ async def send_message():
         # If theres no early bird, dont send the message
         if FIRST_GM is False:
             return
+        FIRST_GM = False
+        FIRST_GM_USER = None
 
         channel = client.get_channel(CHANNEL_ID)
         embed = discord.Embed(
@@ -184,8 +186,3 @@ async def send_message():
         )
         embed.set_image(url=random.choice(MORNING_GIFS))
         await channel.send(embed=embed)
-
-        # Reset early bird every day
-
-        FIRST_GM = False
-        FIRST_GM_USER = None
