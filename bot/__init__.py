@@ -175,13 +175,14 @@ async def send_message():
         # If theres no early bird, dont send the message
         if FIRST_GM is False:
             return
+        temp_first = FIRST_GM_USER
         FIRST_GM = False
         FIRST_GM_USER = None
 
         channel = client.get_channel(CHANNEL_ID)
         embed = discord.Embed(
             title="Good Afternoon," + SERVER_NAME + "!",
-            description=("Todays early bird was " + str(FIRST_GM_USER) + "!\n\n"),
+            description=("Todays early bird was " + str(temp_first) + "!\n\n"),
             color=0x00FF00,
         )
         embed.set_image(url=random.choice(MORNING_GIFS))
