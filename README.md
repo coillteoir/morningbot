@@ -26,19 +26,23 @@ pip install -r requirements.txt
 
 3. Create a file called 'token' and put in your bot token.
 
-4. 🚀 Run the bot.
+4. Go to `./bot/__init__.py` and fill in the following:
+- The API key in the `get_weather()` function
+- The API key in the `get_news()` function
+
+5. 🚀 Run the bot.
 
 ```bash
 python3 .
 ```
 
-5. 🐳 Build the image.
+6. 🐳 Build the image.
 
 ```bash
 docker build -t morningbot .
 ```
 
-6. 🐳 Run the container.
+7. 🐳 Run the container.
 
 ```bash
 docker run -d --name morningbot morningbot
