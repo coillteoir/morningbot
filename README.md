@@ -26,9 +26,11 @@ pip install -r requirements.txt
 
 3. Create a file called 'token' and put in your bot token.
 
-4. Go to `./bot/__init__.py` and fill in the following:
-- The API key in the `get_weather()` function
-- The API key in the `get_news()` function
+4. Go to `./config/configuration_data.json` and fill in the following:
+- The API keys for the News and Weather APIs,
+- The Discord server name,
+- The Discord channel id.
+This will allow MorningBot to send the 'Good morning' and send the 'Early bird' messages
 
 5. 🚀 Run the bot.
 
