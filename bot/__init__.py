@@ -93,7 +93,6 @@ async def on_ready():
     schedule.every().day.at("13:00", timezone).do(send_leaderboard)
 
 
-
 server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
 FIRST_GM = False
 FIRST_GM_USER = None
@@ -150,7 +149,6 @@ async def on_message(message):
             await message.channel.send(f"debug minute changed to {extracted_number}")
 
 
-
 @tasks.loop(seconds=60)
 async def send_message():
     global FIRST_GM
@@ -163,7 +161,6 @@ async def send_message():
         channel = client.get_channel(CHANNEL_ID)
         print(channel)
         embed = discord.Embed(
-
             title="Good Morning," + SERVER_NAME + "!",
             description=(
                 "**Todays weather in Dublin:**\n"
@@ -214,4 +211,3 @@ def sighandle_exit(sig, frame):
 
 signal.signal(signal.SIGINT, sighandle_exit)
 signal.signal(signal.SIGTERM, sighandle_exit)
-
