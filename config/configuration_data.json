@@ -1,9 +1,13 @@
 {
   "server_name": "CS++",
   "timezone": "Europe/Dublin",
-  "channel_id": 1053499749443059814,
-  "morning_emoji":  "☀️ ",
+  "channel_id": 941006604403363953,
+  "morning_emoji":  "☀️",
+  "early_emoji": "🌅",
   "bad_morning_emoji": "🤬",
+  "weather_api_key": "not this time",
+  "news_api_key": "not this time",
+  "debug_mode": false,
   "good_morning_phrases": [
     "good morning",  
     "maidin mhaith", 
