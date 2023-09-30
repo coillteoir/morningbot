@@ -9,7 +9,6 @@ from datetime import date, datetime, timedelta
 import re
 
 import discord
-import schedule
 import pytz
 import requests
 from discord.ext import commands, tasks
@@ -89,8 +88,6 @@ def get_current_minute():
 @client.event
 async def on_ready():
     print(f"We have logged in as {client.user}, time is {get_current_hour()}")
-    schedule.every().day.at("06:00", timezone).do(send_weather)
-    schedule.every().day.at("13:00", timezone).do(send_leaderboard)
 
 
 server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])

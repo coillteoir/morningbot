@@ -1,4 +1,3 @@
 discord
 pytz
 requests
-schedule
