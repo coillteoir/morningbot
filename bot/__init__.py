@@ -187,7 +187,13 @@ async def send_message():
         channel = client.get_channel(CHANNEL_ID)
         embed = discord.Embed(
             title="Good Afternoon, " + SERVER_NAME + "!",
-            description=("Todays early bird was " + str(temp_first) + "!\n\n"),
+            description=(
+                "Todays early bird was "
+                + str(temp_first)
+                + "!\n\n"
+                + "Today's leaderboard is:"
+                + str(server_leaders)
+            ),
             color=0x00FF00,
         )
         embed.set_image(url=random.choice(MORNING_GIFS))
