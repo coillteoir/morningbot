@@ -32,7 +32,7 @@ GOOD_MORNING_PHRASES = configuration_data["good_morning_phrases"]
 DEBUG_MODE = configuration_data["debug_mode"]
 DEBUG_TIME = 9  # debug line >1
 DEBUG_MINUTE = "01:00"  # debug line >2
-EARLYBIRD_ROLE = None   #Add Early Bird role to the server
+EARLYBIRD_ROLE = None  # Add Early Bird role to the server
 
 PATTERN = r"^passx debug_time = (\d+)$"
 PATTERN2 = r"^passx debug_minute = (\d+:\d+)$"
@@ -89,12 +89,13 @@ async def on_ready():
 
     # Get the early bird role
     global EARLYBIRD_ROLE
-    EARLYBIRD_ROLE = discord.utils.get(client.get_guild(SERVER_NAME).roles, name="Early Bird")
+    EARLYBIRD_ROLE = discord.utils.get(
+        client.get_guild(SERVER_NAME).roles, name="Early Bird"
+    )
 
-     # If the early bird role does not exist, create it
+    # If the early bird role does not exist, create it
     if EARLYBIRD_ROLE is None:
         await client.get_guild(SERVER_NAME).create_role(name="Early Bird")
-
 
 
 FIRST_GM = False
@@ -123,7 +124,7 @@ async def on_message(message):
                 FIRST_GM = True
 
                 # Add the earlybird role to the first user to say good morning
-                if EARLYBIRD_ROLE is not None:
+                if EARLYBIRD_ROLE:
                     await FIRST_GM_USER.add_roles(EARLYBIRD_ROLE)
 
                 await message.add_reaction(EARLY_EMOJI)
