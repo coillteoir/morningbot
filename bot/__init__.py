@@ -91,6 +91,10 @@ async def on_ready():
     global EARLYBIRD_ROLE
     EARLYBIRD_ROLE = discord.utils.get(client.get_guild(SERVER_NAME).roles, name="Early Bird")
 
+     # If the early bird role does not exist, create it
+    if EARLYBIRD_ROLE is None:
+        await client.get_guild(SERVER_NAME).create_role(name="Early Bird")
+
 
 
 FIRST_GM = False
