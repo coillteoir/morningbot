@@ -28,12 +28,12 @@ class Leaderboard:
     def __init__(self, channel):
         print("LEADERBOARD INIT")
         self.channel = channel
-        path = f"config/leaderboards/{self.channel}-leaderboard.json"
-        print(path)
+        self.path = f"config/leaderboards/{self.channel}-leaderboard.json"
+        print(self.path)
 
         self.members = []
-        if os.path.isfile(path):
-            with open(path, "r", encoding="utf-8") as leader_file:
+        if os.path.isfile(self.path):
+            with open(self.path, "r", encoding="utf-8") as leader_file:
                 leader_dict = json.load(leader_file)
             self.channel = leader_dict["channel"]
 
@@ -47,7 +47,7 @@ class Leaderboard:
         self.members.sort()
         self.members.reverse()
         for index, member in enumerate(self.members):
-            value += f"{index}. {str(member)}\n"
+            value += f"{index + 1}. {str(member)}\n"
         return value
 
     def add_point(self, name):
@@ -61,11 +61,9 @@ class Leaderboard:
             print(f"Created: {name}")
 
     def dump_data(self):
-        path = f"config/leaderboards/{self.channel}-leaderboard.json"
-
         member_list = list(map(lambda x: x.__dict__, self.members))
 
         leader_dict = {"channel": self.channel, "members": member_list}
 
-        with open(path, "w+", encoding="utf-8") as dump_file:
+        with open(self.path, "w+", encoding="utf-8") as dump_file:
             json.dump(leader_dict, dump_file)
