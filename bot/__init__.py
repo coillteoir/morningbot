@@ -87,6 +87,7 @@ def get_current_minute():
 
 @client.event
 async def on_ready():
+    send_message.start()
     print(f"We have logged in as {client.user}, time is {get_current_hour()}")
 
 
