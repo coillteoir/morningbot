@@ -118,6 +118,7 @@ async def on_message(message):
                 FIRST_GM = True
 
                 await message.add_reaction(EARLY_EMOJI)
+                server_leaders.add_point(message.author)
                 return
 
             server_leaders.add_point(message.author)
