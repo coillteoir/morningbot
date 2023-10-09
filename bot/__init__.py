@@ -205,12 +205,13 @@ async def send_message():
 
         FIRST_GM = False
         FIRST_GM_USER = None
+        # Cache leaderboard
+        server_leaders.dump_data()
 
 
 def sighandle_exit(sig, frame):
     print(sig, frame)
     print("Exiting using handler")
-    server_leaders.dump_data()
     sys.exit()
 
 
