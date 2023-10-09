@@ -2,6 +2,8 @@
 
 import json
 import random
+import signal
+import sys
 import time
 from datetime import date, datetime, timedelta
 import re
@@ -10,6 +12,8 @@ import discord
 import pytz
 import requests
 from discord.ext import commands, tasks
+
+import leaderboard
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -83,10 +87,11 @@ def get_current_minute():
 
 @client.event
 async def on_ready():
-    print(f"We have logged in as {client.user}, time is {get_current_hour()}")
     send_message.start()
+    print(f"We have logged in as {client.user}, time is {get_current_hour()}")
 
 
+server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
 FIRST_GM = False
 FIRST_GM_USER = None
 
@@ -113,7 +118,10 @@ async def on_message(message):
                 FIRST_GM = True
 
                 await message.add_reaction(EARLY_EMOJI)
+                server_leaders.add_point(message.author)
                 return
+
+            server_leaders.add_point(message.author)
             await message.add_reaction(MORNING_EMOJI)
 
             return
@@ -140,7 +148,6 @@ async def on_message(message):
             await message.channel.send(f"debug minute changed to {extracted_number}")
 
 
-# CALL EVERY HOUR
 @tasks.loop(seconds=60)
 async def send_message():
     global FIRST_GM
@@ -182,8 +189,30 @@ async def send_message():
         channel = client.get_channel(CHANNEL_ID)
         embed = discord.Embed(
             title="Good Afternoon, " + SERVER_NAME + "!",
-            description=("Todays early bird was " + str(temp_first) + "!\n\n"),
+            description=(
+                "Todays early bird was "
+                + str(temp_first)
+                + "!\n\n"
+                + "Today's leaderboard is:"
+                + str(server_leaders)
+            ),
             color=0x00FF00,
         )
         embed.set_image(url=random.choice(MORNING_GIFS))
         await channel.send(embed=embed)
+
+        # Reset early bird every day
+
+        FIRST_GM = False
+        FIRST_GM_USER = None
+
+
+def sighandle_exit(sig, frame):
+    print(sig, frame)
+    print("Exiting using handler")
+    server_leaders.dump_data()
+    sys.exit()
+
+
+signal.signal(signal.SIGINT, sighandle_exit)
+signal.signal(signal.SIGTERM, sighandle_exit)
