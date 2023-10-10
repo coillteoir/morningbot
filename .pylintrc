@@ -430,6 +430,8 @@ disable=raw-checker-failed,
         use-symbolic-message-instead,
         missing-function-docstring,
         missing-module-docstring,
+        missing-class-docstring,
+        too-few-public-methods,
         assigning-non-slot,
         global-statement
 

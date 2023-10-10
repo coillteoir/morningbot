@@ -1,4 +1,4 @@
 token
-leaderboards/
-__pycache__/
+config/leaderboards/
+**/__pycache__/
 nohup.out
