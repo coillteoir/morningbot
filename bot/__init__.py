@@ -33,7 +33,7 @@ MORNING_GIFS = configuration_data["good_morning_gif_urls"]
 WEATHER_API_KEY = configuration_data["weather_api_key"]
 NEWS_API_KEY = configuration_data["news_api_key"]
 GOOD_MORNING_PHRASES = configuration_data["good_morning_phrases"]
-DEBUG_MODE = configuration_data["debug_mode"]
+DEBUGMODE = configuration_data["debug_mode"]
 DEBUG_TIME = 9  # debug line >1
 DEBUG_MINUTE = "01:00"  # debug line >2
 
