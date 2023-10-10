@@ -24,6 +24,7 @@ MORNING_EMOJI = configuration_data["morning_emoji"]
 EARLY_EMOJI = configuration_data["early_emoji"]
 BAD_MORNING_EMOJI = configuration_data["bad_morning_emoji"]
 SERVER_NAME = configuration_data["server_name"]
+SERVER_ID = configuration_data["server_id"]
 CHANNEL_ID = configuration_data["channel_id"]
 MORNING_GIFS = configuration_data["good_morning_gif_urls"]
 WEATHER_API_KEY = configuration_data["weather_api_key"]
@@ -90,12 +91,12 @@ async def on_ready():
     # Get the early bird role
     global EARLYBIRD_ROLE
     EARLYBIRD_ROLE = discord.utils.get(
-        client.get_guild(SERVER_NAME).roles, name="Early Bird"
+        client.get_guild(SERVER_ID).roles, name="Early Bird"
     )
 
     # If the early bird role does not exist, create it
     if EARLYBIRD_ROLE is None:
-        await client.get_guild(SERVER_NAME).create_role(name="Early Bird")
+        await client.get_guild(SERVER_ID).create_role(name="Early Bird")
 
 
 FIRST_GM = False
