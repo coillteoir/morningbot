@@ -31,19 +31,21 @@ pip install -r requirements.txt
 - The Discord channel id.
 This will allow MorningBot to send the 'Good morning' and send the 'Early bird' messages
 
-5. 🚀 Run the bot.
+5. Grant the Bot permission to add/update roles. This will ensure that the bot can succesfully update users roles.
+
+6. 🚀 Run the bot.
 
 ```bash
 python3 .
 ```
 
-6. 🐳 Build the image.
+7. 🐳 Build the image.
 
 ```bash
 docker build -t morningbot .
 ```
 
-7. 🐳 Run the container.
+8. 🐳 Run the container.
 
 ```bash
 docker run -d --name morningbot morningbot
