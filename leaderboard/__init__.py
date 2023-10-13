@@ -61,7 +61,7 @@ class Leaderboard:
             print(f"Created: {name}")
 
     def dump_data(self):
-        member_list = list(map(lambda x: vars(x), self.members))
+        member_list = list(map(vars, self.members))
 
         leader_dict = {"channel": self.channel, "members": member_list}
 
