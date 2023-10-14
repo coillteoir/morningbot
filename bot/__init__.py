@@ -89,18 +89,22 @@ def get_current_minute():
 
 @client.event
 async def on_ready():
+    global EARLYBIRD_ROLE
+
     send_message.start()
-    print(f"We have logged in as {client.user}, time is {get_current_hour()}")
 
     # Get the early bird role
-    global EARLYBIRD_ROLE
     EARLYBIRD_ROLE = discord.utils.get(
         client.get_guild(SERVER_ID).roles, name="Early Bird"
     )
 
-    # If the early bird role does not exist, create it
+    # If the early bird role does not exist, create it and write it to the global
     if EARLYBIRD_ROLE is None:
         await client.get_guild(SERVER_ID).create_role(name="Early Bird")
+
+        EARLYBIRD_ROLE = discord.utils.get(
+            client.get_guild(SERVER_ID).roles, name="Early Bird"
+        )
 
 
 server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
@@ -119,7 +123,6 @@ async def on_message(message):
 
     if 6 <= get_current_hour() <= 12:
         if "bad morning" in contents:
-            print("bad morning detected")
             await message.add_reaction(BAD_MORNING_EMOJI)
             return
 
@@ -130,8 +133,7 @@ async def on_message(message):
                 FIRST_GM = True
 
                 # Add the earlybird role to the first user to say good morning
-                if EARLYBIRD_ROLE:
-                    await FIRST_GM_USER.add_roles(EARLYBIRD_ROLE)
+                await FIRST_GM_USER.add_roles(EARLYBIRD_ROLE)
 
                 await message.add_reaction(EARLY_EMOJI)
                 server_leaders.add_point(message.author)
@@ -162,6 +164,7 @@ async def on_message(message):
             DEBUG_MINUTE = extracted_number
             print(f"debug time changed to {extracted_number}")
             await message.channel.send(f"debug minute changed to {extracted_number}")
+    return
 
 
 @tasks.loop(seconds=60)
@@ -174,7 +177,6 @@ async def send_message():
         news_data = get_news()
 
         channel = client.get_channel(CHANNEL_ID)
-        print(channel)
         embed = discord.Embed(
             title="Good Morning," + SERVER_NAME + "!",
             description=(
@@ -193,6 +195,9 @@ async def send_message():
         embed.set_thumbnail(url=f"https:{weather_data[3]}")
         embed.set_image(url=random.choice(MORNING_GIFS))
         await channel.send(embed=embed)
+        await FIRST_GM_USER.remove_roles(EARLYBIRD_ROLE)
+
+        return
 
     if get_current_minute() == "13:00":
         # If theres no early bird, dont send the message
@@ -215,12 +220,16 @@ async def send_message():
             color=0x00FF00,
         )
         embed.set_image(url=random.choice(MORNING_GIFS))
+
         await channel.send(embed=embed)
 
         # Reset early bird every day
 
         FIRST_GM = False
         FIRST_GM_USER = None
+
+        return
+    return
 
 
 def sighandle_exit(sig, frame):
