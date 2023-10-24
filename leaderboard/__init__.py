@@ -44,10 +44,15 @@ class Leaderboard:
 
     def __str__(self):
         value = ""
+
         self.members.sort()
         self.members.reverse()
-        for index, member in enumerate(self.members):
-            value += f"{index + 1}. {str(member)}\n"
+
+        for index, member in enumerate(self.members, start=1):
+            value += f"{index}. {str(member)}\n"
+            if index == 5:
+                break
+
         return value
 
     def add_point(self, name):

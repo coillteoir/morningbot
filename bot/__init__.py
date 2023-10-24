@@ -92,6 +92,7 @@ async def on_ready():
 
 
 server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
+current_leaders = []  # List that tracks the people added to the leaderboard today
 FIRST_GM = False
 FIRST_GM_USER = None
 
@@ -118,7 +119,9 @@ async def on_message(message):
                 FIRST_GM = True
 
                 await message.add_reaction(EARLY_EMOJI)
-                server_leaders.add_point(message.author)
+                if message.author not in current_leaders:
+                    server_leaders.add_point(message.author)
+                    current_leaders.append(message.author)
                 return
 
             server_leaders.add_point(message.author)
@@ -152,6 +155,7 @@ async def on_message(message):
 async def send_message():
     global FIRST_GM
     global FIRST_GM_USER
+    global current_leaders
 
     if get_current_minute() == "06:00":
         weather_data = get_weather()
@@ -193,7 +197,7 @@ async def send_message():
                 "Todays early bird was "
                 + str(temp_first)
                 + "!\n\n"
-                + "Today's leaderboard is:"
+                + "Today's leaderboard is:\n"
                 + str(server_leaders)
             ),
             color=0x00FF00,
@@ -201,10 +205,11 @@ async def send_message():
         embed.set_image(url=random.choice(MORNING_GIFS))
         await channel.send(embed=embed)
 
-        # Reset early bird every day
-
+        # Reset early bird every day and current leaders
         FIRST_GM = False
         FIRST_GM_USER = None
+        current_leaders = []
+
         # Cache leaderboard
         server_leaders.dump_data()
 
