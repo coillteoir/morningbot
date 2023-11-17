@@ -1,8 +1,8 @@
-name: Python-Lint
+name: Python Lint
 run-name: ${{ github.actor }} PR being linted for code cleanliness
 on: [pull_request]
 jobs:
-  Lint:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Job triggered by ${{ github.event_name }} event."

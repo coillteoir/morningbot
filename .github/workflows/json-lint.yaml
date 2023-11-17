@@ -1,8 +1,8 @@
-name: Json-Validate
+name: Json Validate
 run-name: ${{ github.actor }} Validating JSON in config files
 on: [pull_request]
 jobs:
-  Validate:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Job triggered by ${{ github.event_name }} event."
