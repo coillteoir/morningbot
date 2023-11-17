@@ -1,5 +1,5 @@
 name: "Dev Image Build"
-run-name: ${{ github.actor }} PR being linted for code cleanliness
+run-name: ${{ github.actor }} Dev Image Build
 on: [pull_request]
 jobs:
   build:
