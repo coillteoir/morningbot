@@ -111,26 +111,28 @@ async def on_message(message):
             await message.add_reaction(BAD_MORNING_EMOJI)
             return
 
-        if any(element in contents for element in GOOD_MORNING_PHRASES):
-            print(f'gm detected > "{message.content}" by {message.author}')
-            if FIRST_GM is False:
-                FIRST_GM_USER = message.author
-                FIRST_GM = True
+        # Use regular expressions to check for good morning phrases small changes
+        for pattern in GOOD_MORNING_PHRASES:
+            if re.search(rf'\b{re.escape(pattern)}\b', contents):
+                print(f'gm detected > "{message.content}" by {message.author}')
+                if FIRST_GM is False:
+                    FIRST_GM_USER = message.author
+                    FIRST_GM = True
 
-                await message.add_reaction(EARLY_EMOJI)
+                    await message.add_reaction(EARLY_EMOJI)
+                    server_leaders.add_point(message.author)
+                    return
+
                 server_leaders.add_point(message.author)
+                await message.add_reaction(MORNING_EMOJI)
+
                 return
 
-            server_leaders.add_point(message.author)
-            await message.add_reaction(MORNING_EMOJI)
-
+    #Performing regular expression checking on easter egg phrases
+    for egg_phrase, reaction in configuration_data["easter_egg_phrases"].items():
+        if re.search(rf'\b{re.escape(egg_phrase)}\b', contents):
+            await message.add_reaction(reaction)
             return
-
-    for egg_phrase in configuration_data["easter_egg_phrases"].keys():
-        if egg_phrase in contents:
-            await message.add_reaction(
-                configuration_data["easter_egg_phrases"][egg_phrase]
-            )
 
     if DEBUG_MODE:
         if re.match(PATTERN, contents.lower()):  # debug block >1
