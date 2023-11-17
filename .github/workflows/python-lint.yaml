@@ -1,4 +1,4 @@
-name: Test-Lint
+name: Python-Lint
 run-name: ${{ github.actor }} PR being linted for code cleanliness
 on: [pull_request]
 jobs:
