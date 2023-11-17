@@ -134,6 +134,7 @@ async def on_message(message):
             await message.add_reaction(reaction)
             return
 
+
     if DEBUG_MODE:
         if re.match(PATTERN, contents.lower()):  # debug block >1
             extracted_number = re.match(PATTERN, contents.lower()).group(1)
