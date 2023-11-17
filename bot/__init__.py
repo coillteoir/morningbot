@@ -111,7 +111,7 @@ async def on_message(message):
             await message.add_reaction(BAD_MORNING_EMOJI)
             return
 
-        # Use regular expressions to check for good morning phrases
+        # Use regular expressions to check for good morning phrases small changes
         for pattern in GOOD_MORNING_PHRASES:
             if re.search(rf'\b{re.escape(pattern)}\b', contents):
                 print(f'gm detected > "{message.content}" by {message.author}')
@@ -128,6 +128,7 @@ async def on_message(message):
 
                 return
 
+    #Performing regular expression checking on easter egg phrases
     for egg_phrase, reaction in configuration_data["easter_egg_phrases"].items():
         if re.search(rf'\b{re.escape(egg_phrase)}\b', contents):
             await message.add_reaction(reaction)
