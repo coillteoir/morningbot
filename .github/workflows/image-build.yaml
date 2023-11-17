@@ -7,3 +7,4 @@ jobs:
     steps:
       - run: echo "Job triggered by ${{ github.event_name }}."
       - run: docker --version
+      - run: docker build -t morningbot-dev .
