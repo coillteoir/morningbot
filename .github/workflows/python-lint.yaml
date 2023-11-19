@@ -16,3 +16,4 @@ jobs:
       - run: ls
       - run: black . --diff
       - run: pylint **/*.py --rcfile=.pylintrc
+      - run: echo "mypy here"
