@@ -1,0 +1,6 @@
+version: '3'
+services:
+  morningbot:
+    image: morningbot:latest
+    volumes: 
+    - ./token:/usr/src/MorningBot/token

@@ -1,0 +1,12 @@
+name: "Dev Image Build"
+run-name: ${{ github.actor }} Dev Image Build
+on: [pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Job triggered by ${{ github.event_name }}."
+      - uses: actions/checkout@v3
+      - run: docker --version
+      - run: docker build -t morningbot-dev .
+      - run: docker image ls | grep morningbot-dev
