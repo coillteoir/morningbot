@@ -1,8 +1,8 @@
-name: Json-Validate
-run-name: ${{ github.actor }} PR being linted for code cleanliness
+name: Json Validate
+run-name: ${{ github.actor }} Validating JSON in config files
 on: [pull_request]
 jobs:
-  Lint:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Job triggered by ${{ github.event_name }} event."

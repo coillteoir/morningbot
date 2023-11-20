@@ -7,7 +7,7 @@
 4. Write a concise title
 5. Write a good description
 6. Sit back and wait for review
-7. Accept constructive feedback and comments
+7. Build upon constructive feedback and comments
 8. Get it merged :)
 
 ## General PR Guidelines

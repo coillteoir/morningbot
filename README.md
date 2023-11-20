@@ -3,7 +3,6 @@
 MorningBot is a Discord Bot which allows admins to reward users for wishing eachother good morning. Since every server is unique morningbot allows admins to configure the bot and run it themselves. There is a base configuraion which serves as an example and is used in the main instance of morningbot. 
 
 ## Planned features
-- Leaderboard functionality
 - Leaderboard winner gets a custom role
 - Multi-channel config for more expressive bots.
 
@@ -47,7 +46,9 @@ docker build -t morningbot .
 7. 🐳 Run the container.
 
 ```bash
-docker run -d --name morningbot morningbot
+docker run --volume=./token:/usr/src/MorningBot/token -d morningbot:latest
+#or
+docker-compose up
 ```
 
 ### Supported timezones
