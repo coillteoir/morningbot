@@ -115,22 +115,19 @@ async def on_message(message):
         # Use regular expressions to check for good morning phrases small changes
         for pattern in GOOD_MORNING_PHRASES:
             if re.search(rf'\b{re.escape(pattern)}\b', contents):
-                print(f'gm detected > "{message.content}" by {message.author}')
+                print(f'gm detected > "{message.content}" by {message.author.display_name}')
                 if FIRST_GM is False:
-                    FIRST_GM_USER = message.author
+                    FIRST_GM_USER = message.author.display_name
                     FIRST_GM = True
 
                     await message.add_reaction(EARLY_EMOJI)
-                    server_leaders.add_point(message.author)
+                    server_leaders.add_point(message.author.display_name)
                     return
 
                 await message.add_reaction(EARLY_EMOJI)
                 if message.author not in current_leaders:
-                    server_leaders.add_point(message.author)
-                    current_leaders.append(message.author)
-                return
-
-
+                    server_leaders.add_point(message.author.display_name)
+                    current_leaders.append(message.author.display_name)
                 return
 
         # Performing regular expression checking on easter egg phrases
