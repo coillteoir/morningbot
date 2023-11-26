@@ -101,6 +101,7 @@ FIRST_GM_USER = None
 async def on_message(message):
     global FIRST_GM
     global FIRST_GM_USER
+    global current_leaders
     if message.author == client.user:
         await message.add_reaction(MORNING_EMOJI)
         return
