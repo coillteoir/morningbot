@@ -3,4 +3,4 @@ services:
   morningbot:
     image: morningbot:latest
     volumes: 
-    - ./token:/usr/src/MorningBot/token
+    - ./:/usr/src/MorningBot/
