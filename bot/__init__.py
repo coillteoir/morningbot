@@ -92,7 +92,7 @@ async def on_ready():
 
 
 server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
-current_leaders = []  # List that tracks the people added to the leaderboard today
+CURRENT_LEADERS = []  # List that tracks the people added to the leaderboard today
 FIRST_GM = False
 FIRST_GM_USER = None
 
@@ -101,7 +101,6 @@ FIRST_GM_USER = None
 async def on_message(message):
     global FIRST_GM
     global FIRST_GM_USER
-    global current_leaders
     if message.author == client.user:
         await message.add_reaction(MORNING_EMOJI)
         return
@@ -115,8 +114,10 @@ async def on_message(message):
 
         # Use regular expressions to check for good morning phrases small changes
         for pattern in GOOD_MORNING_PHRASES:
-            if re.search(rf'\b{re.escape(pattern)}\b', contents):
-                print(f'gm detected > "{message.content}" by {message.author.display_name}')
+            if re.search(rf"\b{re.escape(pattern)}\b", contents):
+                print(
+                    f'gm detected > "{message.content}" by {message.author.display_name}'
+                )
                 if FIRST_GM is False:
                     FIRST_GM_USER = message.author.display_name
                     FIRST_GM = True
@@ -126,9 +127,9 @@ async def on_message(message):
                     return
 
                 await message.add_reaction(EARLY_EMOJI)
-                if message.author not in current_leaders:
+                if message.author not in CURRENT_LEADERS:
                     server_leaders.add_point(message.author.display_name)
-                    current_leaders.append(message.author.display_name)
+                    CURRENT_LEADERS.append(message.author.display_name)
                 return
 
     # Performing regular expression checking on easter egg phrases
@@ -136,7 +137,6 @@ async def on_message(message):
         if re.search(egg_phrase, contents):
             await message.add_reaction(reaction)
             return
-
 
     if DEBUG_MODE:
         if re.match(PATTERN, contents.lower()):  # debug block >1
@@ -158,7 +158,7 @@ async def on_message(message):
 async def send_message():
     global FIRST_GM
     global FIRST_GM_USER
-    global current_leaders
+    global CURRENT_LEADERS
 
     if get_current_minute() == "06:00":
         weather_data = get_weather()
@@ -211,7 +211,7 @@ async def send_message():
         # Reset early bird every day and current leaders
         FIRST_GM = False
         FIRST_GM_USER = None
-        current_leaders = []
+        CURRENT_LEADERS = []
 
         # Cache leaderboard
         server_leaders.dump_data()
