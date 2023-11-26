@@ -130,11 +130,11 @@ async def on_message(message):
                     current_leaders.append(message.author.display_name)
                 return
 
-        # Performing regular expression checking on easter egg phrases
-        for egg_phrase, reaction in configuration_data["easter_egg_phrases"].items():
-            if re.search(egg_phrase, contents):
-                await message.add_reaction(reaction)
-                return
+    # Performing regular expression checking on easter egg phrases
+    for egg_phrase, reaction in configuration_data["easter_egg_phrases"].items():
+        if re.search(egg_phrase, contents):
+            await message.add_reaction(reaction)
+            return
 
 
     if DEBUG_MODE:
