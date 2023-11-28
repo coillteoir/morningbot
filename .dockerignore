@@ -1,5 +1,7 @@
+token
 README.md
 CONTRIBUTING.md
 **/__pycache__/
 .git/
-token
+.github
+.gitignore
