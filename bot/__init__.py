@@ -126,10 +126,10 @@ async def on_message(message):
                     server_leaders.add_point(message.author.display_name)
                     return
 
-                await message.add_reaction(EARLY_EMOJI)
                 if message.author not in CURRENT_LEADERS:
                     server_leaders.add_point(message.author.display_name)
                     CURRENT_LEADERS.append(message.author.display_name)
+                    await message.add_reaction(EARLY_EMOJI)
                 return
 
     # Performing regular expression checking on easter egg phrases
