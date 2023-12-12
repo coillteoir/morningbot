@@ -89,6 +89,9 @@ def get_current_minute():
 async def on_ready():
     send_message.start()
     print(f"We have logged in as {client.user}, time is {get_current_hour()}")
+    print("====BOT RUNNING IN SERVERS====")
+    for guild in client.guilds:
+        print(guild)
 
 
 server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
