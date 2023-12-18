@@ -5,11 +5,14 @@ import os
 import time
 
 """Leaderboard objects store information for a specific channel"""
+
+
 class Leaderboard:
     """
     Store information about members of a leaderboard.
     Nested to signal it shoudn't be created externally.
     """
+
     class Member:
         def __init__(self, uuid: int, mornings: int):
             self.uuid = uuid
