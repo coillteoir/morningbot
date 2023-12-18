@@ -125,8 +125,8 @@ async def on_message(message):
                     FIRST_GM_USER = message.author.display_name
                     FIRST_GM = True
 
-                    await message.add_reaction(EARLY_EMOJI)
-                    server_leaders.add_point(message.author.display_name)
+                    await message.add_reaction(MORNING_EMOJI)
+                    server_leaders.add_point(message.author.id)
                     return
 
                 if message.author not in CURRENT_LEADERS:
@@ -155,6 +155,11 @@ async def on_message(message):
             DEBUG_MINUTE = extracted_number
             print(f"debug time changed to {extracted_number}")
             await message.channel.send(f"debug minute changed to {extracted_number}")
+
+
+"""
+    Discord equivalent of a cron job every minute
+"""
 
 
 @tasks.loop(seconds=60)
@@ -188,6 +193,9 @@ async def send_message():
         embed.set_image(url=random.choice(MORNING_GIFS))
         await channel.send(embed=embed)
 
+    """
+        Rewrite to use member ID to generate embed.
+    """
     if get_current_minute() == "13:00":
         # If theres no early bird, dont send the message
         if FIRST_GM is False:
@@ -197,6 +205,16 @@ async def send_message():
         FIRST_GM_USER = None
 
         channel = client.get_channel(CHANNEL_ID)
+        guild = channel.guild
+
+        leader_data = server_leaders.return_leaderboard()
+
+        lb_string = ""
+        for mem in leader_data:
+            name = guild.get_member(mem.uuid).display_name
+            mornings = mem.mornings
+            lb_string += f"{name}: {mornings}\n"
+
         embed = discord.Embed(
             title="Good Afternoon, " + SERVER_NAME + "!",
             description=(
@@ -204,7 +222,7 @@ async def send_message():
                 + str(temp_first)
                 + "!\n\n"
                 + "Today's leaderboard is:\n"
-                + str(server_leaders)
+                + lb_string
             ),
             color=0x00FF00,
         )

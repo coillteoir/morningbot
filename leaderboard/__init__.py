@@ -1,16 +1,18 @@
-"""
-    Leaderboard for morningbot
-"""
+"""Leaderboard for morningbot"""
 
 import json
 import os
 import time
 
-
+"""Leaderboard objects store information for a specific channel"""
 class Leaderboard:
+    """
+    Store information about members of a leaderboard.
+    Nested to signal it shoudn't be created externally.
+    """
     class Member:
-        def __init__(self, name, mornings):
-            self.name = name
+        def __init__(self, uuid: int, mornings: int):
+            self.uuid = uuid
             self.mornings = mornings
             self.last_morning = time.gmtime(0)
 
@@ -19,13 +21,18 @@ class Leaderboard:
             if temp_time.tm_yday != self.last_morning.tm_yday:
                 self.mornings += 1
 
-        def __lt__(self, other):
+        def __lt__(self, other) -> bool:
             return self.mornings < other.mornings
 
-        def __str__(self):
-            return f"{self.name}: {self.mornings}"
+        def __str__(self) -> str:
+            return f"{self.uuid}: {self.mornings}"
 
-    def __init__(self, channel):
+    """
+    Loads a json file associated with the channel.
+    If no leaderboard directory exists, it creates one.
+    """
+
+    def __init__(self, channel: int):
         print("LEADERBOARD INIT")
         self.channel = channel
         self.path = f"config/leaderboards/{self.channel}-leaderboard.json"
@@ -41,11 +48,11 @@ class Leaderboard:
             self.channel = leader_dict["channel"]
 
             for member in leader_dict["members"]:
-                self.members.append(self.Member(member["name"], member["mornings"]))
+                self.members.append(self.Member(member["uuid"], member["mornings"]))
         else:
             self.channel = channel
 
-    def __str__(self):
+    def __str__(self) -> str:
         value = ""
 
         self.members.sort()
@@ -58,15 +65,30 @@ class Leaderboard:
 
         return value
 
-    def add_point(self, name):
+    """
+    Adds a point to a member.  
+    Checks if a member exists first. 
+    This can be optimized to remove loop I'd imagine (pythonic)
+    """
+
+    def return_leaderboard(self):
+        self.members.sort()
+        self.members.reverse()
+        return self.members
+
+    def add_point(self, uuid: str):
         for member in self.members:
-            if member.name == name:
+            if member.uuid == uuid:
                 member.inc()
                 print("exists", member)
                 break
         else:
-            self.members.append(self.Member(name, 1))
-            print(f"Created: {name}")
+            self.members.append(self.Member(uuid, 1))
+            print(f"Created: {uuid}")
+
+    """
+    Dumps data to a JSON file for leaderboard's channel
+    """
 
     def dump_data(self):
         member_list = list(map(vars, self.members))
