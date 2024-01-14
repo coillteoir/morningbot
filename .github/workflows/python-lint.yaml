@@ -12,7 +12,6 @@ jobs:
       - run: echo "Packages installed"
       - uses: actions/checkout@v3
       - run: pip install -r requirements.txt
-      - run: echo "Checked out into ${{ github.repository }} on branch ${{ github.ref }}"
-      - run: ls
+      - run: echo "Checked out into ${{ github.repository }}"
       - run: black . --diff
       - run: pylint **/*.py --rcfile=.pylintrc
