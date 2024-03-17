@@ -1,6 +1,7 @@
 version: '3'
 services:
   morningbot:
-    image: morningbot:latest
+    image: davidlynchsd/morningbot:latest
+    build: .
     volumes: 
     - ./:/usr/src/MorningBot/
