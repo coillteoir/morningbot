@@ -221,7 +221,7 @@ async def send_message():
                 "Todays early bird was "
                 + str(temp_first)
                 + "!\n\n"
-                + "Today's leaderboard is:\n"
+                + "Today's leaderboard is:\n\n"
                 + lb_string
             ),
             color=0x00FF00,
