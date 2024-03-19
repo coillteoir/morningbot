@@ -31,6 +31,9 @@ class Leaderboard:
         self.path = f"config/leaderboards/{self.channel}-leaderboard.json"
         print(self.path)
 
+        if os.path.isdir("config/leaderboards/") is not True:
+            os.mkdir("config/leaderboards/")
+
         self.members = []
         if os.path.isfile(self.path):
             with open(self.path, "r", encoding="utf-8") as leader_file:

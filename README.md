@@ -48,7 +48,9 @@ docker build -t morningbot .
 8. 🐳 Run the container.
 
 ```bash
-docker run -d --name morningbot morningbot
+docker run --volume=./:/usr/src/MorningBot/ -d morningbot:latest
+#or
+docker-compose up
 ```
 
 ### Supported timezones

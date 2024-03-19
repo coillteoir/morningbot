@@ -56,19 +56,18 @@
     "https://media.giphy.com/media/hUEtOkI8ntRtBLyMfb/giphy.gif",
     "https://media.giphy.com/media/TKXMVRt5uvV8OYErao/giphy.gif",
     "https://media.giphy.com/media/mxjzBpyu8DDLIcEKVC/giphy.gif",
-    "https://tenor.com/view/доброе-утро-кофе-coffee-gif-15999509",
+    "https://tenor.com/bfimL.gif",
     "https://media.giphy.com/media/hHifLbLhEloqfDwWs0/giphy.gif",
-    "https://tenor.com/view/早安-早上好-goodmorning-flowers-sunflowers-gif-21233714",
-    "https://tenor.com/view/おはようございます-good-morning-morning-in-japanese-gif-4722997724943366125",
+    "https://tenor.com/bBf1q.gif",
+    "https://tenor.com/fM3xHGl6Ng9.gif",
     "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ2o4amxqNnhsd3E4amIzN2VhZmhoOWdmdGV0a2VubG44MjE4ZjVvayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JSw3ivlumEKZWrxdwp/giphy.gif",
     "https://media.giphy.com/media/E3qMYDlq0YIb0qXFug/giphy.gif",
-    "https://tenor.com/view/suprabhat-good-morning-holidays-good-morning-hindi-good-morning-good-morning-happy-sunday-gif-19862051",
-    "https://giphy.com/clips/greetings-holiday-kwanzaa-5yBrQnoPsjLaCo80fy",
+    "https://tenor.com/bvvbP.gif",
     "https://media.giphy.com/media/lckQGTmmQYdjnXerK2/giphy.gif",
-    "https://tenor.com/view/good-morning-günaydın-gif-25596075",
+    "https://tenor.com/bTyR5.gif",
     "https://media0.giphy.com/media/f66sq76KfkDCKoxYSV/giphy.gif",
     "https://i.pinimg.com/originals/16/27/71/162771b373fc94042ec3e0e3615c0db1.gif",
-    "https://tenor.com/view/good-morning-gif-25798053"
+    "https://tenor.com/bUppN.gif"
   ],
   "easter_egg_phrases": {
     "cheesed to meet you": "🧀",
@@ -82,8 +81,10 @@
     "with the boys": "🍻",
     "keithmas": "🎅",
     "santanuts":"🎅",
+    "good night": "🫖",
     "happy halloween": "🎃",
     "boo": "😨",
-    "spooktober": "👻"
+    "spooktober": "👻",
+    "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b": "📧"
   }
 }
