@@ -93,7 +93,7 @@ async def on_ready():
     print(f"We have logged in as {client.user}, time is {get_current_hour()}")
 
 
-server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
+server_leaders = leaderboard.Leaderboard(CHANNEL_ID)
 FIRST_GM = False
 FIRST_GM_USER = None
 

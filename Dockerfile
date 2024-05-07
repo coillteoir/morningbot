@@ -1,9 +1,13 @@
-FROM python:3.11-slim
+from python:3.11-slim
 
-RUN mkdir -p /usr/src/MorningBot
-WORKDIR /usr/src/MorningBot
+run mkdir -p /workspace/morningbot
+workdir /workspace/morningbot
 
-COPY . .
-RUN pip install -r requirements.txt
+copy requirements.txt requirements.txt
 
-CMD ["python3", "."]
+run pip install -r requirements.txt
+
+copy bot bot
+copy leaderboard leaderboard
+
+cmd ["python3", "."]
