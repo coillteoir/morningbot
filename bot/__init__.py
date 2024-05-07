@@ -152,7 +152,7 @@ async def on_message(message):
             await message.channel.send(f"debug minute changed to {extracted_number}")
 
 
-def morning_message():
+async def morning_message():
     weather_data = get_weather()
     news_data = get_news()
 
@@ -177,7 +177,10 @@ def morning_message():
     await channel.send(embed=embed)
 
 
-def afternoon_message():
+async def afternoon_message():
+    global FIRST_GM
+    global FIRST_GM_USER
+
     # If theres no early bird, dont send the message
     if FIRST_GM is False:
         return
@@ -205,14 +208,11 @@ def afternoon_message():
 
 @tasks.loop(seconds=60)
 async def send_message():
-    global FIRST_GM
-    global FIRST_GM_USER
-
     if get_current_minute() == "06:00":
-        morning_message()
+        await morning_message()
 
     if get_current_minute() == "13:00":
-        afternoon_message()
+        await afternoon_message()
 
 
 def sighandle_exit(sig, frame):
