@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
 import json
 import random
@@ -23,15 +23,16 @@ client = discord.Client(intents=intents)
 with open("config/configuration_data.json", "r", encoding="utf-8") as config_file:
     configuration_data = json.loads(config_file.read())
 
+WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
+NEWS_API_KEY = os.getenv("NEWS_API_KEY")
+CHANNEL_ID = os.getenv("MAIN_CHANNEL_ID")
+
 TIMEZONE = pytz.timezone(configuration_data["timezone"])
 MORNING_EMOJI = configuration_data["morning_emoji"]
 EARLY_EMOJI = configuration_data["early_emoji"]
 BAD_MORNING_EMOJI = configuration_data["bad_morning_emoji"]
 SERVER_NAME = configuration_data["server_name"]
-CHANNEL_ID = configuration_data["channel_id"]
 MORNING_GIFS = configuration_data["good_morning_gif_urls"]
-WEATHER_API_KEY = configuration_data["weather_api_key"]
-NEWS_API_KEY = configuration_data["news_api_key"]
 GOOD_MORNING_PHRASES = configuration_data["good_morning_phrases"]
 DEBUG_MODE = configuration_data["debug_mode"]
 DEBUG_TIME = 9  # debug line >1
@@ -113,7 +114,7 @@ async def on_message(message):
 
         # Use regular expressions to check for good morning phrases small changes
         for pattern in GOOD_MORNING_PHRASES:
-            if re.search(rf'\b{re.escape(pattern)}\b', contents):
+            if re.search(rf"\b{re.escape(pattern)}\b", contents):
                 print(f'gm detected > "{message.content}" by {message.author}')
                 if FIRST_GM is False:
                     FIRST_GM_USER = message.author
@@ -133,7 +134,6 @@ async def on_message(message):
         if re.search(egg_phrase, contents):
             await message.add_reaction(reaction)
             return
-
 
     if DEBUG_MODE:
         if re.match(PATTERN, contents.lower()):  # debug block >1
