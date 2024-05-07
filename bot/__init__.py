@@ -131,7 +131,7 @@ async def on_message(message):
                 return
 
     # Performing regular expression checking on easter egg phrases
-    for egg_phrase, reaction in configuration_data["easter_egg_phrases"].items():
+    for egg_phrase, reaction in configuration_data["easter_egg_patterns"].items():
         if re.search(egg_phrase, contents):
             await message.add_reaction(reaction)
             return
