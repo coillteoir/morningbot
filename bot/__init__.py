@@ -5,8 +5,9 @@ import random
 import signal
 import sys
 import time
-from datetime import date, datetime, timedelta
+import os
 import re
+from datetime import date, datetime, timedelta
 
 import discord
 import pytz
@@ -151,63 +152,67 @@ async def on_message(message):
             await message.channel.send(f"debug minute changed to {extracted_number}")
 
 
+def morning_message():
+    weather_data = get_weather()
+    news_data = get_news()
+
+    channel = client.get_channel(CHANNEL_ID)
+    embed = discord.Embed(
+        title=f"Good Morning, {SERVER_NAME}!",
+        description=(
+            f"**Todays weather:**\n \
+            {weather_data[2]}\n \
+            min: {weather_data[1]}c\n \
+            max: {weather_data[0]}c\n\n \
+            **Todays News:**\n \
+            {news_data[0]}\n\n \
+            {news_data[1]}\n\n \
+            {news_data[2]}\n\n \
+            **Have a great day!**"
+        ),
+        color=0x00FF00,
+    )
+    embed.set_thumbnail(url=f"https:{weather_data[3]}")
+    embed.set_image(url=random.choice(MORNING_GIFS))
+    await channel.send(embed=embed)
+
+
+def afternoon_message():
+    # If theres no early bird, dont send the message
+    if FIRST_GM is False:
+        return
+    temp_first = FIRST_GM_USER
+    FIRST_GM = False
+    FIRST_GM_USER = None
+
+    channel = client.get_channel(CHANNEL_ID)
+    embed = discord.Embed(
+        title=f"Good Afternoon, {SERVER_NAME}!",
+        description=(
+            "Todays early bird was {temp_first}!\n\n \
+            Leaderboard:{server_leaders}"
+        ),
+        color=0x00FF00,
+    )
+    embed.set_image(url=random.choice(MORNING_GIFS))
+    await channel.send(embed=embed)
+
+    # Reset early bird every day
+
+    FIRST_GM = False
+    FIRST_GM_USER = None
+
+
 @tasks.loop(seconds=60)
 async def send_message():
     global FIRST_GM
     global FIRST_GM_USER
 
     if get_current_minute() == "06:00":
-        weather_data = get_weather()
-        news_data = get_news()
-
-        channel = client.get_channel(CHANNEL_ID)
-        print(channel)
-        embed = discord.Embed(
-            title="Good Morning," + SERVER_NAME + "!",
-            description=(
-                "**Todays weather in Dublin:**\n"
-                + f"{weather_data[2]}\n"
-                + f"min: {weather_data[1]}c\n"
-                + f"max: {weather_data[0]}c\n\n"
-                + "**Todays News:**\n"
-                + f"{news_data[0]}\n\n"
-                + f"{news_data[1]}\n\n"
-                + f"{news_data[2]}\n\n"
-                + "**Have a great day!**"
-            ),
-            color=0x00FF00,
-        )
-        embed.set_thumbnail(url=f"https:{weather_data[3]}")
-        embed.set_image(url=random.choice(MORNING_GIFS))
-        await channel.send(embed=embed)
+        morning_message()
 
     if get_current_minute() == "13:00":
-        # If theres no early bird, dont send the message
-        if FIRST_GM is False:
-            return
-        temp_first = FIRST_GM_USER
-        FIRST_GM = False
-        FIRST_GM_USER = None
-
-        channel = client.get_channel(CHANNEL_ID)
-        embed = discord.Embed(
-            title="Good Afternoon, " + SERVER_NAME + "!",
-            description=(
-                "Todays early bird was "
-                + str(temp_first)
-                + "!\n\n"
-                + "Today's leaderboard is:"
-                + str(server_leaders)
-            ),
-            color=0x00FF00,
-        )
-        embed.set_image(url=random.choice(MORNING_GIFS))
-        await channel.send(embed=embed)
-
-        # Reset early bird every day
-
-        FIRST_GM = False
-        FIRST_GM_USER = None
+        afternoon_message()
 
 
 def sighandle_exit(sig, frame):
