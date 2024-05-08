@@ -64,33 +64,37 @@ bot = Bot("config/configuration_data.json")
 
 def get_weather():
     # Get weather, using weatherapi.com
-    response = requests.get(
-        "http://api.weatherapi.com/v1/forecast.json?"
-        + f"key={bot.weather_api_key}&q=Dublin&days=1&aqi=no&alerts=no",
-        timeout=10,
-    )
-    data = response.json()
-    forecast = data["forecast"]["forecastday"][0]
-    max_temp_celsius = forecast["day"]["maxtemp_c"]
-    min_temp_celsius = forecast["day"]["mintemp_c"]
-    conditions = forecast["day"]["condition"]["text"]
-    weather_icon_url = forecast["day"]["condition"]["icon"]
-
+    try:
+        response = requests.get(
+            "http://api.weatherapi.com/v1/forecast.json?"
+            + f"key={bot.weather_api_key}&q=Dublin&days=1&aqi=no&alerts=no",
+            timeout=10,
+        )
+        data = response.json()
+        forecast = data["forecast"]["forecastday"][0]
+        max_temp_celsius = forecast["day"]["maxtemp_c"]
+        min_temp_celsius = forecast["day"]["mintemp_c"]
+        conditions = forecast["day"]["condition"]["text"]
+        weather_icon_url = forecast["day"]["condition"]["icon"]
+    except:
+        return None
     return max_temp_celsius, min_temp_celsius, conditions, weather_icon_url
 
 
 def get_news():
-    response = requests.get(
-        "https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&api"
-        + f"Key={bot.news_api_key}",
-        timeout=10,
-    )  # TECH NEWS
-    data = response.json()
-    articles = data["articles"]
-    headline_one = articles[0]["title"]
-    headline_two = articles[1]["title"]
-    headline_three = articles[2]["title"]
-
+    try:
+        response = requests.get(
+            "https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&api"
+            + f"Key={bot.news_api_key}",
+            timeout=10,
+        )  # TECH NEWS
+        data = response.json()
+        articles = data["articles"]
+        headline_one = articles[0]["title"]
+        headline_two = articles[1]["title"]
+        headline_three = articles[2]["title"]
+    except:
+        return None
     return headline_one, headline_two, headline_three
 
 
@@ -167,10 +171,12 @@ async def morning_message():
     news_data = get_news()
 
     channel = client.get_channel(bot.channel_id)
-    embed = discord.Embed(
-        title=f"Good Morning, {bot.server_name}!",
-        description=(
-            f"**Todays weather:**\n \
+
+    e_title = f"Good Morning, {bot.server_name}!"
+    e_description = "Have a great day!"
+
+    if weather_data is not None and news_data is not None:
+        e_description = f"**Todays weather:**\n \
             {weather_data[2]}\n \
             min: {weather_data[1]}c\n \
             max: {weather_data[0]}c\n\n \
@@ -179,7 +185,9 @@ async def morning_message():
             {news_data[1]}\n\n \
             {news_data[2]}\n\n \
             **Have a great day!**"
-        ),
+    embed = discord.Embed(
+        title=e_title,
+        description=e_description,
         color=0x00FF00,
     )
     embed.set_thumbnail(url=f"https:{weather_data[3]}")
