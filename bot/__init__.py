@@ -21,7 +21,7 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 
-class Bot():
+class Bot:
     def __init__(self, path):
         config = None
 
@@ -31,7 +31,6 @@ class Bot():
         if config is None:
             print("config could not be loaded", sys.stderr)
             return
-
 
         self.weather_api_key = os.getenv("WEATHER_API_KEY")
         self.news_api_key = os.getenv("NEWS_API_KEY")
@@ -58,6 +57,7 @@ class Bot():
         self.debug_minute = "01:00"  # debug line >2
 
         self.leaderboard = Leaderboard(self.channel_id)
+
 
 bot = Bot("config/configuration_data.json")
 
@@ -110,6 +110,7 @@ def get_current_minute():
 async def on_ready():
     send_message.start()
     print(f"We have logged in as {client.user}, time is {get_current_hour()}")
+
 
 @client.event
 async def on_message(message):
@@ -190,15 +191,12 @@ async def afternoon_message():
     # If theres no early bird, dont send the message
     if bot.first_gm is False:
         return
-    temp_first = bot.first_gm_user
-    bot.first_gm = False
-    bot.first_gm_user = None
 
     channel = client.get_channel(bot.channel_id)
     embed = discord.Embed(
         title=f"Good Afternoon, {bot.server_name}!",
         description=(
-            "Todays early bird was {temp_first}!\n\n \
+            "Todays early bird was {bot.first_gm_user}!\n\n \
             Leaderboard:{bot.leaderboard}"
         ),
         color=0x00FF00,
@@ -207,7 +205,6 @@ async def afternoon_message():
     await channel.send(embed=embed)
 
     # Reset early bird every day
-
     bot.first_gm = False
     bot.first_gm_user = None
 
