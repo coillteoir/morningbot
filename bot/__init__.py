@@ -20,10 +20,12 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
+
 # Get the configuration
 def load_config():
     with open("config/configuration_data.json", "r", encoding="utf-8") as config_file:
         return json.loads(config_file.read())
+
 
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
@@ -135,7 +137,7 @@ async def on_message(message):
                 return
 
     # Performing regular expression checking on easter egg phrases
-    for egg_phrase, reaction in configuration_data["easter_egg_patterns"].items():
+    for egg_phrase, reaction in config["easter_egg_patterns"].items():
         if re.search(egg_phrase, contents):
             await message.add_reaction(reaction)
             return
