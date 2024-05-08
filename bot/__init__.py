@@ -21,21 +21,25 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 # Get the configuration
-with open("config/configuration_data.json", "r", encoding="utf-8") as config_file:
-    configuration_data = json.loads(config_file.read())
+def load_config():
+    with open("config/configuration_data.json", "r", encoding="utf-8") as config_file:
+        return json.loads(config_file.read())
 
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
 CHANNEL_ID = os.getenv("MAIN_CHANNEL_ID")
 
-TIMEZONE = pytz.timezone(configuration_data["timezone"])
-MORNING_EMOJI = configuration_data["morning_emoji"]
-EARLY_EMOJI = configuration_data["early_emoji"]
-BAD_MORNING_EMOJI = configuration_data["bad_morning_emoji"]
-SERVER_NAME = configuration_data["server_name"]
-MORNING_GIFS = configuration_data["good_morning_gif_urls"]
-GOOD_MORNING_PHRASES = configuration_data["good_morning_phrases"]
-DEBUG_MODE = configuration_data["debug_mode"]
+config = load_config()
+
+SERVER_NAME = config["bot"]["server_name"]
+TIMEZONE = pytz.timezone(config["bot"]["timezone"])
+DEBUG_MODE = config["bot"]["debug_mode"]
+
+MORNING_EMOJI = config["morning"]["morning_emoji"]
+EARLY_EMOJI = config["morning"]["early_emoji"]
+BAD_MORNING_EMOJI = config["morning"]["bad_morning_emoji"]
+MORNING_GIFS = config["morning"]["good_morning_gif_urls"]
+GOOD_MORNING_PHRASES = config["morning"]["good_morning_phrases"]
 DEBUG_TIME = 9  # debug line >1
 DEBUG_MINUTE = "01:00"  # debug line >2
 
