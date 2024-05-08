@@ -170,10 +170,9 @@ async def morning_message():
     weather_data = get_weather()
     news_data = get_news()
 
-    channel = client.get_channel(bot.channel_id)
-
     e_title = f"Good Morning, {bot.server_name}!"
     e_description = "Have a great day!"
+
 
     if weather_data is not None and news_data is not None:
         e_description = f"**Todays weather:**\n \
@@ -185,6 +184,8 @@ async def morning_message():
             {news_data[1]}\n\n \
             {news_data[2]}\n\n \
             **Have a great day!**"
+
+    channel = client.get_channel(bot.channel_id)
     embed = discord.Embed(
         title=e_title,
         description=e_description,
@@ -201,11 +202,21 @@ async def afternoon_message():
         return
 
     channel = client.get_channel(bot.channel_id)
+    guild = channel.guild
+    leader_data = bot.leaderboard.return_leaderboard()
+    lb_string = ""
+    for mem in leader_data:
+        name = guild.get_member(mem.uuid).display_name
+        mornings = mem.mornings
+        lb_string += f"{name}: {mornings}\n"
+
+    channel = client.get_channel(bot.channel_id)
     embed = discord.Embed(
         title=f"Good Afternoon, {bot.server_name}!",
         description=(
             "Todays early bird was {bot.first_gm_user}!\n\n \
-            Leaderboard:{bot.leaderboard}"
+            Leaderboard:\n\n \
+            {lb_string}"
         ),
         color=0x00FF00,
     )
