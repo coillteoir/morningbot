@@ -2,6 +2,7 @@ import json
 import os
 import time
 
+
 class Leaderboard:
     class Member:
         def __init__(self, uuid: int, mornings: int):

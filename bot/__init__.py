@@ -173,7 +173,6 @@ async def morning_message():
     e_title = f"Good Morning, {bot.server_name}!"
     e_description = "Have a great day!"
 
-
     if weather_data is not None and news_data is not None:
         e_description = f"**Todays weather:**\n \
             {weather_data[2]}\n \
@@ -191,7 +190,9 @@ async def morning_message():
         description=e_description,
         color=0x00FF00,
     )
-    embed.set_thumbnail(url=f"https:{weather_data[3]}")
+    embed.set_thumbnail(
+        url="https://t3.ftcdn.net/jpg/02/11/00/98/240_F_211009816_JQ1VpZEpkqsnWFnRPm4z064Q22rWjT9t.jpg"
+    )
     embed.set_image(url=random.choice(bot.morning_gifs))
     await channel.send(embed=embed)
 
