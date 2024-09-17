@@ -1,3 +1,5 @@
+"""Main file of morningbot, loads environment info and runs"""
+
 import os
 
 from dotenv import load_dotenv
