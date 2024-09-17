@@ -1,6 +1,11 @@
-version: '3'
+version: "3"
 services:
   morningbot:
-    image: morningbot:latest
-    volumes: 
-    - ./:/usr/src/MorningBot/
+    image: davidlynchsd/morningbot:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/workspace/morningbot/
+    env_file:
+      - "./bot.env"

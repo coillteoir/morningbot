@@ -3,3 +3,4 @@ CONTRIBUTING.md
 **/__pycache__/
 .git/
 token
+bot.env

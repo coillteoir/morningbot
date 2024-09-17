@@ -1,10 +1,15 @@
+"""Main file of morningbot, loads environment info and runs"""
+
+import os
+
+from dotenv import load_dotenv
+
 import bot
 
 
 def main():
-    with open("token", "r", encoding="utf-8") as token_pointer:
-        token = token_pointer.read()
-        bot.client.run(token)
+    load_dotenv()
+    bot.client.run(os.getenv("DISCORD_TOKEN"))
 
 
 if __name__ == "__main__":

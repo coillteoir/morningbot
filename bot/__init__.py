@@ -1,219 +1,322 @@
-#!/bin/python3
+"""Main logic for morningbot, contains class definitions and functions"""
 
+import datetime
 import json
+import os
 import random
+import re
 import signal
 import sys
-import time
-from datetime import date, datetime, timedelta
-import re
 
 import discord
 import pytz
 import requests
-from discord.ext import commands, tasks
+from discord.ext import tasks
 
-import leaderboard
+from leaderboard import Leaderboard
 
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
-# Get the configuration
-with open("config/configuration_data.json", "r", encoding="utf-8") as config_file:
-    configuration_data = json.loads(config_file.read())
+MORNING_START = 6
+MORNING_END = 12
+START_TIME = "06:00"
+END_TIME = "13:00"
 
-TIMEZONE = pytz.timezone(configuration_data["timezone"])
-MORNING_EMOJI = configuration_data["morning_emoji"]
-EARLY_EMOJI = configuration_data["early_emoji"]
-BAD_MORNING_EMOJI = configuration_data["bad_morning_emoji"]
-SERVER_NAME = configuration_data["server_name"]
-CHANNEL_ID = configuration_data["channel_id"]
-MORNING_GIFS = configuration_data["good_morning_gif_urls"]
-WEATHER_API_KEY = configuration_data["weather_api_key"]
-NEWS_API_KEY = configuration_data["news_api_key"]
-GOOD_MORNING_PHRASES = configuration_data["good_morning_phrases"]
-DEBUG_MODE = configuration_data["debug_mode"]
-DEBUG_TIME = 9  # debug line >1
-DEBUG_MINUTE = "01:00"  # debug line >2
 
-PATTERN = r"^passx debug_time = (\d+)$"
-PATTERN2 = r"^passx debug_minute = (\d+:\d+)$"
+class Bot:
+    """Class wrapper for bot state"""
+
+    def __init__(self, path):
+        config = None
+
+        with open(path, encoding="utf-8") as config_file:
+            config = json.loads(config_file.read())
+
+        if config is None:
+            print("config could not be loaded", sys.stderr)
+            return
+
+        self.weather_api_key = os.getenv("WEATHER_API_KEY")
+        self.news_api_key = os.getenv("NEWS_API_KEY")
+        self.channel_id = os.getenv("MAIN_CHANNEL_ID")
+
+        self.server_name = config["bot"]["server_name"]
+        self.timezone = pytz.timezone(config["bot"]["timezone"])
+        self.debug_mode = config["bot"]["debug_mode"]
+
+        self.morning_emoji = config["morning"]["morning_emoji"]
+        self.early_emoji = config["morning"]["early_emoji"]
+        self.bad_morning_emoji = config["morning"]["bad_morning_emoji"]
+        self.morning_gifs = config["morning"]["good_morning_gif_urls"]
+        self.good_morning_phrases = config["morning"]["good_morning_phrases"]
+
+        self.easter_egg_patterns = config["easter_egg_patterns"]
+        self.first_gm = False
+        self.first_gm_user = None
+        self.debug_time = None
+
+        self.pattern = r"^passx debug_time = (\d+)$"
+        self.pattern2 = r"^passx debug_minute = (\d+:\d+)$"
+        self.debug_time = 9  # debug line >1
+        self.debug_minute = "01:00"  # debug line >2
+
+        self.leaderboard = Leaderboard(self.channel_id)
+
+
+bot = Bot("config/configuration_data.json")
 
 
 def get_weather():
-    # Get weather, using weatherapi.com
-    response = requests.get(
-        "http://api.weatherapi.com/v1/forecast.json?"
-        + f"key={WEATHER_API_KEY}&q=Dublin&days=1&aqi=no&alerts=no",
-        timeout=10,
-    )
+    """Gets the weather data from the weather API"""
+    response = None
+
+    try:
+        response = requests.get(
+            "http://api.weatherapi.com/v1/forecast.json?"
+            + f"key={bot.weather_api_key}&q=Dublin&days=1&aqi=no&alerts=no",
+            timeout=10,
+        )
+    except requests.exceptions.HTTPError:
+        return None
+
     data = response.json()
     forecast = data["forecast"]["forecastday"][0]
     max_temp_celsius = forecast["day"]["maxtemp_c"]
     min_temp_celsius = forecast["day"]["mintemp_c"]
     conditions = forecast["day"]["condition"]["text"]
     weather_icon_url = forecast["day"]["condition"]["icon"]
-
     return max_temp_celsius, min_temp_celsius, conditions, weather_icon_url
 
 
 def get_news():
-    response = requests.get(
-        "https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&api"
-        + f"Key={NEWS_API_KEY}",
-        timeout=10,
-    )  # TECH NEWS
+    """Gets news data from the news api"""
+    response = None
+
+    try:
+        response = requests.get(
+            "https://newsapi.org/v2/top-headlines?category=technology&sortBy=popularity&api"
+            + f"Key={bot.news_api_key}",
+            timeout=10,
+        )
+    except requests.exceptions.HTTPError:
+        return None
+
     data = response.json()
     articles = data["articles"]
     headline_one = articles[0]["title"]
     headline_two = articles[1]["title"]
     headline_three = articles[2]["title"]
-
     return headline_one, headline_two, headline_three
 
 
 def get_current_hour():
-    if DEBUG_MODE:
-        return DEBUG_TIME  # debug line >1
-    return int(datetime.now(TIMEZONE).strftime("%H"))
+    """Gets the current hour"""
+    if bot.debug_mode:
+        return bot.debug_time  # debug line >1
+    return int(datetime.datetime.now(bot.timezone).strftime("%H"))
 
 
 def get_current_minute():
-    if DEBUG_MODE:
-        return DEBUG_MINUTE  # debug line >2
-    return str(datetime.now(TIMEZONE).strftime("%H:%M"))
+    """Gets the current minute"""
+    if bot.debug_mode:
+        return bot.debug_minute  # debug line >2
+    return str(datetime.datetime.now(bot.timezone).strftime("%H:%M"))
 
 
 @client.event
 async def on_ready():
+    """Logic which runs when the bot connects to discord"""
     send_message.start()
     print(f"We have logged in as {client.user}, time is {get_current_hour()}")
 
 
-server_leaders = leaderboard.Leaderboard(configuration_data["channel_id"])
-FIRST_GM = False
-FIRST_GM_USER = None
-
-
 @client.event
 async def on_message(message):
-    global FIRST_GM
-    global FIRST_GM_USER
+    """Logic for handling messages recieved for reactions"""
     if message.author == client.user:
-        await message.add_reaction(MORNING_EMOJI)
+        await message.add_reaction(bot.morning_emoji)
         return
     contents = message.content.casefold()
 
-    if 6 <= get_current_hour() <= 12:
-        if "bad morning" in contents:
-            print("bad morning detected")
-            await message.add_reaction(BAD_MORNING_EMOJI)
-            return
-
-        # Use regular expressions to check for good morning phrases small changes
-        for pattern in GOOD_MORNING_PHRASES:
-            if re.search(rf'\b{re.escape(pattern)}\b', contents):
-                print(f'gm detected > "{message.content}" by {message.author}')
-                if FIRST_GM is False:
-                    FIRST_GM_USER = message.author
-                    FIRST_GM = True
-
-                    await message.add_reaction(EARLY_EMOJI)
-                    server_leaders.add_point(message.author)
-                    return
-
-                server_leaders.add_point(message.author)
-                await message.add_reaction(MORNING_EMOJI)
-
-                return
-
     # Performing regular expression checking on easter egg phrases
-    for egg_phrase, reaction in configuration_data["easter_egg_phrases"].items():
+    for egg_phrase, reaction in bot.easter_egg_patterns.items():
         if re.search(egg_phrase, contents):
             await message.add_reaction(reaction)
             return
 
-
-    if DEBUG_MODE:
-        if re.match(PATTERN, contents.lower()):  # debug block >1
-            extracted_number = re.match(PATTERN, contents.lower()).group(1)
-            global DEBUG_TIME
-            DEBUG_TIME = int(extracted_number)
+    if bot.debug_mode:
+        if re.match(bot.pattern, contents.lower()):  # debug block >1
+            extracted_number = re.match(bot.pattern, contents.lower()).group(1)
+            bot.debug_time = int(extracted_number)
             print(f"debug time changed to {extracted_number}")
             await message.channel.send(f"debug time changed to {extracted_number}")
 
-        if re.match(PATTERN2, contents.lower()):  # debug block >2
-            extracted_number = re.match(PATTERN2, contents.lower()).group(1)
-            global DEBUG_MINUTE
-            DEBUG_MINUTE = extracted_number
+        if re.match(bot.pattern2, contents.lower()):  # debug block >2
+            extracted_number = re.match(bot.pattern2, contents.lower()).group(1)
+            bot.debug_minute = extracted_number
             print(f"debug time changed to {extracted_number}")
             await message.channel.send(f"debug minute changed to {extracted_number}")
+
+    # After handling easter eggs and debugs, check if its morning time, then handle morning logic.
+    if not MORNING_START <= get_current_hour() <= MORNING_END:
+        return
+
+    if "bad morning" in contents:
+        await message.add_reaction(bot.bad_morning_emoji)
+        return
+
+    for pattern in bot.good_morning_phrases:
+        if re.search(rf"\b{re.escape(pattern)}\b", contents):
+            print(f'gm detected > "{message.content}" by {message.author}')
+            if bot.first_gm is False:
+                bot.first_gm_user = message.author
+                bot.first_gm = True
+
+                await message.add_reaction(bot.early_emoji)
+                bot.leaderboard.add_point(message.author)
+                return
+
+            bot.leaderboard.add_point(message.author)
+            await message.add_reaction(bot.morning_emoji)
+
+            return
+
+
+async def generate_emoji(message):
+    """returns emoji based on the message sent"""
+    if message.author == client.user:
+        return bot.morning_emoji
+    contents = message.content.casefold()
+
+    # Performing regular expression checking on easter egg phrases
+    for egg_phrase, reaction in bot.easter_egg_patterns.items():
+        if re.search(egg_phrase, contents):
+            return reaction
+
+    if bot.debug_mode:
+        if re.match(bot.pattern, contents.lower()):  # debug block >1
+            extracted_number = re.match(bot.pattern, contents.lower()).group(1)
+            bot.debug_time = int(extracted_number)
+            print(f"debug time changed to {extracted_number}")
+            await message.channel.send(f"debug time changed to {extracted_number}")
+
+        if re.match(bot.pattern2, contents.lower()):  # debug block >2
+            extracted_number = re.match(bot.pattern2, contents.lower()).group(1)
+            bot.debug_minute = extracted_number
+            print(f"debug time changed to {extracted_number}")
+            await message.channel.send(f"debug minute changed to {extracted_number}")
+
+    # After handling easter eggs and debugs, check if its morning time, then handle morning logic.
+    if not MORNING_START <= get_current_hour() <= MORNING_END:
+        return None
+
+    if "bad morning" in contents:
+        return message.add_reaction(bot.bad_morning_emoji)
+
+    for pattern in bot.good_morning_phrases:
+        if re.search(rf"\b{re.escape(pattern)}\b", contents):
+            print(f'gm detected > "{message.content}" by {message.author}')
+            if bot.first_gm is False:
+                bot.first_gm_user = message.author
+                bot.first_gm = True
+                bot.leaderboard.add_point(message.author)
+
+                return bot.early_emoji
+
+            bot.leaderboard.add_point(message.author)
+            return bot.morning_emoji
+
+
+async def morning_message():
+    """Sends message containing embed"""
+    weather_data = get_weather()
+    news_data = get_news()
+
+    e_title = f"Good Morning, {bot.server_name}!"
+    e_description = "Have a great day!"
+
+    if weather_data is not None and news_data is not None:
+        e_description = f"**Todays weather:**\n \
+            {weather_data[2]}\n \
+            min: {weather_data[1]}c\n \
+            max: {weather_data[0]}c\n\n \
+            **Todays News:**\n \
+            {news_data[0]}\n\n \
+            {news_data[1]}\n\n \
+            {news_data[2]}\n\n \
+            **Have a great day!**"
+
+    client.get_channel(bot.channel_id)
+    if (channel := client.get_channel(bot.channel_id)) is None:
+        print(f"error: channel {bot.channel_id} could not be found")
+        return
+    embed = discord.Embed(
+        title=e_title,
+        description=e_description,
+        color=0x00FF00,
+    )
+    embed.set_thumbnail(
+        url=(
+            "https://t3.ftcdn.net/jpg/"
+            + "02/11/00/98/240_F_211009816_JQ1VpZEpkqsnWFnRPm4z064Q22rWjT9t.jpg"
+        ),
+    )
+    embed.set_image(url=random.choice(bot.morning_gifs))
+    await channel.send(embed=embed)
+
+
+async def afternoon_message():
+    """Sends leaderboard and nice gif"""
+    if bot.first_gm is False:
+        return
+
+    channel = client.get_channel(bot.channel_id)
+    guild = channel.guild
+    leader_data = bot.leaderboard.return_leaderboard()
+    lb_string = ""
+    for mem in leader_data:
+        name = guild.get_member(mem.uuid).display_name
+        mornings = mem.mornings
+        lb_string += f"{name}: {mornings}\n"
+
+    channel = client.get_channel(bot.channel_id)
+    embed = discord.Embed(
+        title=f"Good Afternoon, {bot.server_name}!",
+        description=(
+            "Todays early bird was {bot.first_gm_user}!\n\n \
+            Leaderboard:\n\n \
+            {lb_string}"
+        ),
+        color=0x00FF00,
+    )
+    embed.set_image(url=random.choice(bot.morning_gifs))
+    await channel.send(embed=embed)
+
+    # Reset early bird every day
+    bot.first_gm = False
+    bot.first_gm_user = None
 
 
 @tasks.loop(seconds=60)
 async def send_message():
-    global FIRST_GM
-    global FIRST_GM_USER
+    """handles message sending logic"""
+    pass
+    """ 
+    if get_current_minute() == START_TIME:
+         await morning_message()
 
-    if get_current_minute() == "06:00":
-        weather_data = get_weather()
-        news_data = get_news()
-
-        channel = client.get_channel(CHANNEL_ID)
-        print(channel)
-        embed = discord.Embed(
-            title="Good Morning," + SERVER_NAME + "!",
-            description=(
-                "**Todays weather in Dublin:**\n"
-                + f"{weather_data[2]}\n"
-                + f"min: {weather_data[1]}c\n"
-                + f"max: {weather_data[0]}c\n\n"
-                + "**Todays News:**\n"
-                + f"{news_data[0]}\n\n"
-                + f"{news_data[1]}\n\n"
-                + f"{news_data[2]}\n\n"
-                + "**Have a great day!**"
-            ),
-            color=0x00FF00,
-        )
-        embed.set_thumbnail(url=f"https:{weather_data[3]}")
-        embed.set_image(url=random.choice(MORNING_GIFS))
-        await channel.send(embed=embed)
-
-    if get_current_minute() == "13:00":
-        # If theres no early bird, dont send the message
-        if FIRST_GM is False:
-            return
-        temp_first = FIRST_GM_USER
-        FIRST_GM = False
-        FIRST_GM_USER = None
-
-        channel = client.get_channel(CHANNEL_ID)
-        embed = discord.Embed(
-            title="Good Afternoon, " + SERVER_NAME + "!",
-            description=(
-                "Todays early bird was "
-                + str(temp_first)
-                + "!\n\n"
-                + "Today's leaderboard is:"
-                + str(server_leaders)
-            ),
-            color=0x00FF00,
-        )
-        embed.set_image(url=random.choice(MORNING_GIFS))
-        await channel.send(embed=embed)
-
-        # Reset early bird every day
-
-        FIRST_GM = False
-        FIRST_GM_USER = None
+    if get_current_minute() == END_TIME:
+         await afternoon_message()
+    """
 
 
 def sighandle_exit(sig, frame):
+    """Signal handlers for exiting application gracefully"""
     print(sig, frame)
     print("Exiting using handler")
-    server_leaders.dump_data()
+    bot.leaderboard.dump_data()
     sys.exit()
 
 
