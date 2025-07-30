@@ -2,5 +2,6 @@ version: '3'
 services:
   morningbot:
     image: morningbot:latest
-    volumes: 
-    - ./:/usr/src/MorningBot/
+    build:
+      context: .
+      dockerfile: Dockerfile

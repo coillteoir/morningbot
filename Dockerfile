@@ -1,9 +1,12 @@
-FROM python:3.11-slim
+FROM golang
 
-RUN mkdir -p /usr/src/MorningBot
-WORKDIR /usr/src/MorningBot
+COPY go.mod go.mod
+COPY go.sum go.sum
 
-COPY . .
-RUN pip install -r requirements.txt
+RUN go mod download
 
-CMD ["python3", "."]
+COPY main.go main.go
+
+RUN go build -o /morningbot main.go
+
+CMD ["/morningbot"]
