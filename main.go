@@ -1,28 +1,26 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"os/signal"
-	// "database/sql"
+
 	"github.com/bwmarrin/discordgo"
+	"github.com/coillteoir/morningbot/ent"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	// db, err := sql.Open("sqlite3", "./leaderboard.db")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	client, err := ent.Open("sqlite3", "file:leaderboard.db?_fk=1")
+	if err != nil {
+		log.Fatalf("failed opening connection to sqlite: %v", err)
+	}
+	defer client.Close()
 
-	// // TODO: orm
-	// initSql := `
-	// create table leaderboard (id integer not null primary key, name text, score integer);
-	// `
-	// _, err  = db.Exec(initSql)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
 
 	token := os.Getenv("DISCORD_TOKEN")
 	session, err := discordgo.New("Bot " + token)
@@ -33,16 +31,23 @@ func main() {
 	log.Println("Logged in")
 
 	session.AddHandler(func(sesh *discordgo.Session, message *discordgo.MessageCreate) {
-		content := message.Message.Content
-		log.Println(message.Message.Content)
+		content := message.Content
+		log.Println(message.Content)
 		if content == "gm" {
-			err = sesh.MessageReactionAdd(message.Message.ChannelID,
+			err = sesh.MessageReactionAdd(message.ChannelID,
 				message.Message.ID,
 				"☀️",
 			)
 			if err != nil {
 				log.Print(err)
 			}
+			player, err := client.Player.
+				Create().
+				SetDiscordID(message.Author.ID).SetScore(1).Save(context.Background())
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Println("created player", player)
 		}
 	})
 

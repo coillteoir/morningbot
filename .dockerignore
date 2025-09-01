@@ -1,5 +1,6 @@
 README.md
 CONTRIBUTING.md
-**/__pycache__/
+morningbot
 .git/
 token
+*.db

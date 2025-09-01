@@ -1,4 +1,4 @@
-FROM golang
+FROM golang:1.24.5-bullseye
 
 COPY go.mod go.mod
 COPY go.sum go.sum
