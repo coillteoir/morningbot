@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -19,7 +20,9 @@ type Player struct {
 	// DiscordID holds the value of the "discordID" field.
 	DiscordID string `json:"discordID,omitempty"`
 	// Score holds the value of the "score" field.
-	Score        int `json:"score,omitempty"`
+	Score int `json:"score,omitempty"`
+	// LastMessage holds the value of the "last_message" field.
+	LastMessage  time.Time `json:"last_message,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -32,6 +35,8 @@ func (*Player) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case player.FieldDiscordID:
 			values[i] = new(sql.NullString)
+		case player.FieldLastMessage:
+			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -64,6 +69,12 @@ func (_m *Player) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field score", values[i])
 			} else if value.Valid {
 				_m.Score = int(value.Int64)
+			}
+		case player.FieldLastMessage:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_message", values[i])
+			} else if value.Valid {
+				_m.LastMessage = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -106,6 +117,9 @@ func (_m *Player) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("score=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Score))
+	builder.WriteString(", ")
+	builder.WriteString("last_message=")
+	builder.WriteString(_m.LastMessage.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

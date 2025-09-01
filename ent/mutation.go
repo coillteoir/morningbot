@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -35,6 +36,7 @@ type PlayerMutation struct {
 	discordID     *string
 	score         *int
 	addscore      *int
+	last_message  *time.Time
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Player, error)
@@ -231,6 +233,42 @@ func (m *PlayerMutation) ResetScore() {
 	m.addscore = nil
 }
 
+// SetLastMessage sets the "last_message" field.
+func (m *PlayerMutation) SetLastMessage(t time.Time) {
+	m.last_message = &t
+}
+
+// LastMessage returns the value of the "last_message" field in the mutation.
+func (m *PlayerMutation) LastMessage() (r time.Time, exists bool) {
+	v := m.last_message
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastMessage returns the old "last_message" field's value of the Player entity.
+// If the Player object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlayerMutation) OldLastMessage(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastMessage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastMessage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastMessage: %w", err)
+	}
+	return oldValue.LastMessage, nil
+}
+
+// ResetLastMessage resets all changes to the "last_message" field.
+func (m *PlayerMutation) ResetLastMessage() {
+	m.last_message = nil
+}
+
 // Where appends a list predicates to the PlayerMutation builder.
 func (m *PlayerMutation) Where(ps ...predicate.Player) {
 	m.predicates = append(m.predicates, ps...)
@@ -265,12 +303,15 @@ func (m *PlayerMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlayerMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 3)
 	if m.discordID != nil {
 		fields = append(fields, player.FieldDiscordID)
 	}
 	if m.score != nil {
 		fields = append(fields, player.FieldScore)
+	}
+	if m.last_message != nil {
+		fields = append(fields, player.FieldLastMessage)
 	}
 	return fields
 }
@@ -284,6 +325,8 @@ func (m *PlayerMutation) Field(name string) (ent.Value, bool) {
 		return m.DiscordID()
 	case player.FieldScore:
 		return m.Score()
+	case player.FieldLastMessage:
+		return m.LastMessage()
 	}
 	return nil, false
 }
@@ -297,6 +340,8 @@ func (m *PlayerMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldDiscordID(ctx)
 	case player.FieldScore:
 		return m.OldScore(ctx)
+	case player.FieldLastMessage:
+		return m.OldLastMessage(ctx)
 	}
 	return nil, fmt.Errorf("unknown Player field %s", name)
 }
@@ -319,6 +364,13 @@ func (m *PlayerMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetScore(v)
+		return nil
+	case player.FieldLastMessage:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastMessage(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Player field %s", name)
@@ -389,6 +441,9 @@ func (m *PlayerMutation) ResetField(name string) error {
 		return nil
 	case player.FieldScore:
 		m.ResetScore()
+		return nil
+	case player.FieldLastMessage:
+		m.ResetLastMessage()
 		return nil
 	}
 	return fmt.Errorf("unknown Player field %s", name)

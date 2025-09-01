@@ -3,6 +3,8 @@
 package player
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 )
 
@@ -15,6 +17,8 @@ const (
 	FieldDiscordID = "discord_id"
 	// FieldScore holds the string denoting the score field in the database.
 	FieldScore = "score"
+	// FieldLastMessage holds the string denoting the last_message field in the database.
+	FieldLastMessage = "last_message"
 	// Table holds the table name of the player in the database.
 	Table = "players"
 )
@@ -24,6 +28,7 @@ var Columns = []string{
 	FieldID,
 	FieldDiscordID,
 	FieldScore,
+	FieldLastMessage,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -39,6 +44,8 @@ func ValidColumn(column string) bool {
 var (
 	// ScoreValidator is a validator for the "score" field. It is called by the builders before save.
 	ScoreValidator func(int) error
+	// DefaultLastMessage holds the default value on creation for the "last_message" field.
+	DefaultLastMessage func() time.Time
 )
 
 // OrderOption defines the ordering options for the Player queries.
@@ -57,4 +64,9 @@ func ByDiscordID(opts ...sql.OrderTermOption) OrderOption {
 // ByScore orders the results by the score field.
 func ByScore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldScore, opts...).ToFunc()
+}
+
+// ByLastMessage orders the results by the last_message field.
+func ByLastMessage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastMessage, opts...).ToFunc()
 }

@@ -11,8 +11,9 @@ var (
 	// PlayersColumns holds the columns for the "players" table.
 	PlayersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "discord_id", Type: field.TypeString},
+		{Name: "discord_id", Type: field.TypeString, Unique: true},
 		{Name: "score", Type: field.TypeInt},
+		{Name: "last_message", Type: field.TypeTime},
 	}
 	// PlayersTable holds the schema information for the "players" table.
 	PlayersTable = &schema.Table{

@@ -3,6 +3,8 @@
 package player
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"github.com/coillteoir/morningbot/ent/predicate"
 )
@@ -60,6 +62,11 @@ func DiscordID(v string) predicate.Player {
 // Score applies equality check predicate on the "score" field. It's identical to ScoreEQ.
 func Score(v int) predicate.Player {
 	return predicate.Player(sql.FieldEQ(FieldScore, v))
+}
+
+// LastMessage applies equality check predicate on the "last_message" field. It's identical to LastMessageEQ.
+func LastMessage(v time.Time) predicate.Player {
+	return predicate.Player(sql.FieldEQ(FieldLastMessage, v))
 }
 
 // DiscordIDEQ applies the EQ predicate on the "discordID" field.
@@ -165,6 +172,46 @@ func ScoreLT(v int) predicate.Player {
 // ScoreLTE applies the LTE predicate on the "score" field.
 func ScoreLTE(v int) predicate.Player {
 	return predicate.Player(sql.FieldLTE(FieldScore, v))
+}
+
+// LastMessageEQ applies the EQ predicate on the "last_message" field.
+func LastMessageEQ(v time.Time) predicate.Player {
+	return predicate.Player(sql.FieldEQ(FieldLastMessage, v))
+}
+
+// LastMessageNEQ applies the NEQ predicate on the "last_message" field.
+func LastMessageNEQ(v time.Time) predicate.Player {
+	return predicate.Player(sql.FieldNEQ(FieldLastMessage, v))
+}
+
+// LastMessageIn applies the In predicate on the "last_message" field.
+func LastMessageIn(vs ...time.Time) predicate.Player {
+	return predicate.Player(sql.FieldIn(FieldLastMessage, vs...))
+}
+
+// LastMessageNotIn applies the NotIn predicate on the "last_message" field.
+func LastMessageNotIn(vs ...time.Time) predicate.Player {
+	return predicate.Player(sql.FieldNotIn(FieldLastMessage, vs...))
+}
+
+// LastMessageGT applies the GT predicate on the "last_message" field.
+func LastMessageGT(v time.Time) predicate.Player {
+	return predicate.Player(sql.FieldGT(FieldLastMessage, v))
+}
+
+// LastMessageGTE applies the GTE predicate on the "last_message" field.
+func LastMessageGTE(v time.Time) predicate.Player {
+	return predicate.Player(sql.FieldGTE(FieldLastMessage, v))
+}
+
+// LastMessageLT applies the LT predicate on the "last_message" field.
+func LastMessageLT(v time.Time) predicate.Player {
+	return predicate.Player(sql.FieldLT(FieldLastMessage, v))
+}
+
+// LastMessageLTE applies the LTE predicate on the "last_message" field.
+func LastMessageLTE(v time.Time) predicate.Player {
+	return predicate.Player(sql.FieldLTE(FieldLastMessage, v))
 }
 
 // And groups predicates with the AND operator between them.

@@ -8,6 +8,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/coillteoir/morningbot/ent"
+	"github.com/coillteoir/morningbot/ent/player"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -41,11 +42,23 @@ func main() {
 			if err != nil {
 				log.Print(err)
 			}
+
+			log.Println(message.Author.ID)
+			p, err := client.Player.Query().Where(player.DiscordID(message.Author.ID)).Only(context.Background())
+			if err != nil {
+				log.Println("not found")
+			} else {
+				if err := p.Update().SetScore(p.Score + 1).Exec(context.Background()); err != nil {
+					log.Print(err)
+				}
+				return
+			}
+			log.Println(p)
 			player, err := client.Player.
 				Create().
 				SetDiscordID(message.Author.ID).SetScore(1).Save(context.Background())
 			if err != nil {
-				log.Fatal(err)
+				log.Print(err)
 			}
 			log.Println("created player", player)
 		}

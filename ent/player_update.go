@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -59,6 +60,20 @@ func (_u *PlayerUpdate) SetNillableScore(v *int) *PlayerUpdate {
 // AddScore adds value to the "score" field.
 func (_u *PlayerUpdate) AddScore(v int) *PlayerUpdate {
 	_u.mutation.AddScore(v)
+	return _u
+}
+
+// SetLastMessage sets the "last_message" field.
+func (_u *PlayerUpdate) SetLastMessage(v time.Time) *PlayerUpdate {
+	_u.mutation.SetLastMessage(v)
+	return _u
+}
+
+// SetNillableLastMessage sets the "last_message" field if the given value is not nil.
+func (_u *PlayerUpdate) SetNillableLastMessage(v *time.Time) *PlayerUpdate {
+	if v != nil {
+		_u.SetLastMessage(*v)
+	}
 	return _u
 }
 
@@ -125,6 +140,9 @@ func (_u *PlayerUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.AddedScore(); ok {
 		_spec.AddField(player.FieldScore, field.TypeInt, value)
 	}
+	if value, ok := _u.mutation.LastMessage(); ok {
+		_spec.SetField(player.FieldLastMessage, field.TypeTime, value)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{player.Label}
@@ -177,6 +195,20 @@ func (_u *PlayerUpdateOne) SetNillableScore(v *int) *PlayerUpdateOne {
 // AddScore adds value to the "score" field.
 func (_u *PlayerUpdateOne) AddScore(v int) *PlayerUpdateOne {
 	_u.mutation.AddScore(v)
+	return _u
+}
+
+// SetLastMessage sets the "last_message" field.
+func (_u *PlayerUpdateOne) SetLastMessage(v time.Time) *PlayerUpdateOne {
+	_u.mutation.SetLastMessage(v)
+	return _u
+}
+
+// SetNillableLastMessage sets the "last_message" field if the given value is not nil.
+func (_u *PlayerUpdateOne) SetNillableLastMessage(v *time.Time) *PlayerUpdateOne {
+	if v != nil {
+		_u.SetLastMessage(*v)
+	}
 	return _u
 }
 
@@ -272,6 +304,9 @@ func (_u *PlayerUpdateOne) sqlSave(ctx context.Context) (_node *Player, err erro
 	}
 	if value, ok := _u.mutation.AddedScore(); ok {
 		_spec.AddField(player.FieldScore, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.LastMessage(); ok {
+		_spec.SetField(player.FieldLastMessage, field.TypeTime, value)
 	}
 	_node = &Player{config: _u.config}
 	_spec.Assign = _node.assignValues

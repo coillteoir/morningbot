@@ -3,6 +3,8 @@
 package ent
 
 import (
+	"time"
+
 	"github.com/coillteoir/morningbot/ent/player"
 	"github.com/coillteoir/morningbot/ent/schema"
 )
@@ -17,4 +19,8 @@ func init() {
 	playerDescScore := playerFields[1].Descriptor()
 	// player.ScoreValidator is a validator for the "score" field. It is called by the builders before save.
 	player.ScoreValidator = playerDescScore.Validators[0].(func(int) error)
+	// playerDescLastMessage is the schema descriptor for last_message field.
+	playerDescLastMessage := playerFields[2].Descriptor()
+	// player.DefaultLastMessage holds the default value on creation for the last_message field.
+	player.DefaultLastMessage = playerDescLastMessage.Default.(func() time.Time)
 }

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -31,6 +32,20 @@ func (_c *PlayerCreate) SetScore(v int) *PlayerCreate {
 	return _c
 }
 
+// SetLastMessage sets the "last_message" field.
+func (_c *PlayerCreate) SetLastMessage(v time.Time) *PlayerCreate {
+	_c.mutation.SetLastMessage(v)
+	return _c
+}
+
+// SetNillableLastMessage sets the "last_message" field if the given value is not nil.
+func (_c *PlayerCreate) SetNillableLastMessage(v *time.Time) *PlayerCreate {
+	if v != nil {
+		_c.SetLastMessage(*v)
+	}
+	return _c
+}
+
 // Mutation returns the PlayerMutation object of the builder.
 func (_c *PlayerCreate) Mutation() *PlayerMutation {
 	return _c.mutation
@@ -38,6 +53,7 @@ func (_c *PlayerCreate) Mutation() *PlayerMutation {
 
 // Save creates the Player in the database.
 func (_c *PlayerCreate) Save(ctx context.Context) (*Player, error) {
+	_c.defaults()
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -63,6 +79,14 @@ func (_c *PlayerCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (_c *PlayerCreate) defaults() {
+	if _, ok := _c.mutation.LastMessage(); !ok {
+		v := player.DefaultLastMessage()
+		_c.mutation.SetLastMessage(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (_c *PlayerCreate) check() error {
 	if _, ok := _c.mutation.DiscordID(); !ok {
@@ -75,6 +99,9 @@ func (_c *PlayerCreate) check() error {
 		if err := player.ScoreValidator(v); err != nil {
 			return &ValidationError{Name: "score", err: fmt.Errorf(`ent: validator failed for field "Player.score": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.LastMessage(); !ok {
+		return &ValidationError{Name: "last_message", err: errors.New(`ent: missing required field "Player.last_message"`)}
 	}
 	return nil
 }
@@ -110,6 +137,10 @@ func (_c *PlayerCreate) createSpec() (*Player, *sqlgraph.CreateSpec) {
 		_spec.SetField(player.FieldScore, field.TypeInt, value)
 		_node.Score = value
 	}
+	if value, ok := _c.mutation.LastMessage(); ok {
+		_spec.SetField(player.FieldLastMessage, field.TypeTime, value)
+		_node.LastMessage = value
+	}
 	return _node, _spec
 }
 
@@ -131,6 +162,7 @@ func (_c *PlayerCreateBulk) Save(ctx context.Context) ([]*Player, error) {
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PlayerMutation)
 				if !ok {
