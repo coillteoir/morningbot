@@ -5,6 +5,7 @@ go 1.24.4
 require (
 	entgo.io/ent v0.14.5
 	github.com/bwmarrin/discordgo v0.29.0
+	github.com/goccy/go-yaml v1.18.0
 	github.com/mattn/go-sqlite3 v1.14.32
 )
 
@@ -19,7 +20,6 @@ require (
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/hashicorp/hcl/v2 v2.24.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
-	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/zclconf/go-cty v1.16.4 // indirect
 	github.com/zclconf/go-cty-yaml v1.1.0 // indirect
 	golang.org/x/crypto v0.41.0 // indirect

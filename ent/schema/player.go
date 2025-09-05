@@ -18,7 +18,6 @@ func (Player) Fields() []ent.Field {
 		field.Int("score").Positive(),
 		field.Time("last_message").Default(time.Now),
 	}
-	return nil
 }
 
 // Edges of the Player.

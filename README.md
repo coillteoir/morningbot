@@ -1,8 +1,9 @@
 # MorningBot
 
-MorningBot is a Discord Bot which allows admins to reward users for wishing eachother good morning. Since every server is unique morningbot allows admins to configure the bot and run it themselves. There is a base configuraion which serves as an example and is used in the main instance of morningbot. 
+MorningBot is a Discord Bot which allows admins to reward users for wishing eachother good morning. Since every server is unique morningbot allows admins to configure the bot and run it themselves. There is a base configuraion which serves as an example and is used in the main instance of morningbot.
 
 ## Planned features
+
 - Leaderboard winner gets a custom role
 - Multi-channel config for more expressive bots.
 
@@ -11,12 +12,15 @@ MorningBot is a Discord Bot which allows admins to reward users for wishing each
 When deploying, you may choose to deploy as a container, or deploy directly to your machine, any instruction that is Docker-only will be marked with a 🐳, direct deployment only will be marked with a 🚀.
 
 ### Installation
+
 1. Clone the repository
+
 ```bash
 git clone https://github.com/davidlynch-sd/MorningBot
 ```
 
 2. 🚀 Install the dependencies.
+
 ```bash
 go mod download
 ```
@@ -26,10 +30,11 @@ go mod download
 3. Token handling tbd.
 
 4. Go to `./config/configuration_data.json` and fill in the following:
+
 - The API keys for the News and Weather APIs,
 - The Discord server name,
 - The Discord channel id.
-This will allow MorningBot to send the 'Good morning' and send the 'Early bird' messages
+  This will allow MorningBot to send the 'Good morning' and send the 'Early bird' messages
 
 5. 🚀 Run the bot.
 
@@ -52,6 +57,7 @@ podman compose up
 ```
 
 ### Supported timezones
+
 <details>
 <summary>timezones</summary>
 <br>
@@ -60,40 +66,40 @@ podman compose up
 
 ### Current supported Languages
 
-|      Phrase       |    Origin     |  
-|-------------------|:-------------:|
-| good morning      |  English      | 
-| maidin mhaith     |  Irish        |  
-| buenos días       |  Spanish      |
-| bonjour           |  French       | 
-| guten morgen      |  German       |  
-| buongiorno        |  Italian      |
-| bom dia           |  Portuguese   | 
-| доброе утро       |  Russian      |  
-| 早上好            |  Chinese      |
-| おはようございます |  Japanese     | 
-| 좋은 아침입니다    |  Korean       |  
-| صباح الخير       |  Arabic       |
-| सुप्रभात            |   Hindi       | 
-| habari za asubuhi |  Swahili      |  
-| καλημέρα          |  Greek        |
-| günaydın          |  Turkish      | 
-| god morgon        |  Swedish      |  
-| dzień dobry       |  Polish       |
-| בוקר טוב         |  Hebrew       | 
-| สวัสดีตอนเช้า        |  Thai         |  
-| hyvää huomenta    |  Finnish      |
-| god morgen        |  Norwegian    | 
-| buna dimineata    |  Romanian     |  
-| bore da           |  Hausa        |
-| beyanî baş        |  Kurdish      | 
-| bonum mane        |  Latin        |  
-| dobro jutro       |  Croatian     |
-| dobré ráno        |  Czech        |  
-| dobrý deň         |  Slovak       |
-| labas rytas       |  Lithuanian   | 
-| labrīt            |  Latvian      |  
-| magandang umaga   |  Fillipino    |
-| ata mārie         |  Maori        | 
-| chào buổi sáng    |  Vietnamese   |  
-| өглөөний мэнд     |  Mongolian    |
+| Phrase             |   Origin   |
+| ------------------ | :--------: |
+| good morning       |  English   |
+| maidin mhaith      |   Irish    |
+| buenos días        |  Spanish   |
+| bonjour            |   French   |
+| guten morgen       |   German   |
+| buongiorno         |  Italian   |
+| bom dia            | Portuguese |
+| доброе утро        |  Russian   |
+| 早上好             |  Chinese   |
+| おはようございます |  Japanese  |
+| 좋은 아침입니다    |   Korean   |
+| صباح الخير         |   Arabic   |
+| सुप्रभात           |   Hindi    |
+| habari za asubuhi  |  Swahili   |
+| καλημέρα           |   Greek    |
+| günaydın           |  Turkish   |
+| god morgon         |  Swedish   |
+| dzień dobry        |   Polish   |
+| בוקר טוב           |   Hebrew   |
+| สวัสดีตอนเช้า      |    Thai    |
+| hyvää huomenta     |  Finnish   |
+| god morgen         | Norwegian  |
+| buna dimineata     |  Romanian  |
+| bore da            |   Hausa    |
+| beyanî baş         |  Kurdish   |
+| bonum mane         |   Latin    |
+| dobro jutro        |  Croatian  |
+| dobré ráno         |   Czech    |
+| dobrý deň          |   Slovak   |
+| labas rytas        | Lithuanian |
+| labrīt             |  Latvian   |
+| magandang umaga    | Fillipino  |
+| ata mārie          |   Maori    |
+| chào buổi sáng     | Vietnamese |
+| өглөөний мэнд      | Mongolian  |

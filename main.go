@@ -2,71 +2,106 @@ package main
 
 import (
 	"context"
-	"log"
+	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/coillteoir/morningbot/ent"
 	"github.com/coillteoir/morningbot/ent/player"
+	"github.com/goccy/go-yaml"
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type Config struct {
+	ServerName         string
+	Timezone           string
+	ChannelID          string
+	MorningEmoji       rune
+	EarlyEmoji         rune
+	BadMorningEmoji    rune
+	WeatherAPIKey      string
+	NewsAPIKey         string
+	GoodMorningPhrases []string `yaml:"goodMorningPhrases"`
+	GoodMorningGifs    []string
+	EasterEggPhrases   map[string]string
+}
+
 func main() {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	data, err := os.ReadFile("config/config.yaml")
+	if err != nil {
+		logger.Error(err.Error())
+	}
+
+	config := Config{}
+	err = yaml.Unmarshal(data, &config)
+	if err != nil {
+		logger.Error(err.Error())
+	}
+
 	client, err := ent.Open("sqlite3", "file:leaderboard.db?_fk=1")
 	if err != nil {
-		log.Fatalf("failed opening connection to sqlite: %v", err)
+		logger.Error(fmt.Sprintf("failed opening connection to sqlite: %v", err))
 	}
 	defer client.Close()
 
 	if err := client.Schema.Create(context.Background()); err != nil {
-		log.Fatalf("failed creating schema resources: %v", err)
+		logger.Error(fmt.Sprintf("failed creating schema resources: %v", err))
 	}
 
 	token := os.Getenv("DISCORD_TOKEN")
 	session, err := discordgo.New("Bot " + token)
 	if err != nil {
-		log.Fatal(err)
+		logger.Error(err.Error())
 	}
 
-	log.Println("Logged in")
+	logger.Info("Logged in")
 
 	session.AddHandler(func(sesh *discordgo.Session, message *discordgo.MessageCreate) {
 		content := message.Content
-		log.Println(message.Content)
-		if content == "gm" {
+		logger.Info(message.Content)
+		newContent := strings.ToLower(content)
+
+		for _, phrase := range config.GoodMorningPhrases {
+			if !strings.Contains(phrase, newContent) {
+				continue
+			}
+
 			err = sesh.MessageReactionAdd(message.ChannelID,
-				message.Message.ID,
+				message.ID,
 				"☀️",
 			)
 			if err != nil {
-				log.Print(err)
+				logger.Error(err.Error())
 			}
 
-			log.Println(message.Author.ID)
+			logger.Info(message.Author.ID)
 			p, err := client.Player.Query().Where(player.DiscordID(message.Author.ID)).Only(context.Background())
-			if err != nil {
-				log.Println("not found")
-			} else {
+			// found
+			if err == nil {
 				if err := p.Update().SetScore(p.Score + 1).Exec(context.Background()); err != nil {
-					log.Print(err)
+					logger.Error(err.Error())
 				}
 				return
 			}
-			log.Println(p)
+			logger.Info("not found")
 			player, err := client.Player.
 				Create().
 				SetDiscordID(message.Author.ID).SetScore(1).Save(context.Background())
 			if err != nil {
-				log.Print(err)
+				logger.Error(err.Error())
 			}
-			log.Println("created player", player)
+			logger.Info("created player", player)
 		}
 	})
 
 	err = session.Open()
 	if err != nil {
-		log.Fatal(err)
+		logger.Error(err.Error())
 	}
 
 	sigch := make(chan os.Signal, 1)
@@ -75,6 +110,6 @@ func main() {
 
 	err = session.Close()
 	if err != nil {
-		log.Fatal(err)
+		logger.Error(err.Error())
 	}
 }
