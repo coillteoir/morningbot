@@ -1,5 +1,5 @@
-name: Json Validate
-run-name: ${{ github.actor }} Validating JSON in config files
+name: Config Validate
+run-name: ${{ github.actor }} Validating YAML in config files
 on: [pull_request]
 jobs:
   validate:
@@ -8,4 +8,4 @@ jobs:
       - run: echo "Job triggered by ${{ github.event_name }} event."
       - uses: actions/checkout@v3
       - run: echo "Checked out into ${{ github.repository }} on branch ${{ github.ref }}"
-      - run: python -mjson.tool **/*.json
+      - run: yq < config/config.yaml
