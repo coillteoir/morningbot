@@ -29,7 +29,7 @@ go mod download
 
 3. Token handling tbd.
 
-4. Go to `./config/configuration_data.json` and fill in the following:
+4. Go to `./config/config.yaml` and fill in the following:
 
 - The API keys for the News and Weather APIs,
 - The Discord server name,

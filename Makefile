@@ -1,5 +1,5 @@
 build: fmt generate
-	go build -race -o morningbot main.go
+	go build -o morningbot main.go
 
 generate:
 	go generate ./...

@@ -1,12 +1,11 @@
 serverName: "CS++"
 timezone: "Europe/Dublin"
-channelId: "941006604403363953"
+channelID: "941006604403363953"
 morningEmoji: "☀️"
 earlyEmoji: "🌅"
 badMorningEmoji: "🤬"
-weatherApiKey: "not this time"
-newsApiKey: "not this time"
-debugMode: false
+weatherAPIKey: "not this time"
+newsAPIKey: "not this time"
 goodMorningPhrases:
   - "good morning"
   - "maidin mhaith"
