@@ -1,4 +1,4 @@
-FROM golang:1.24.5-bullseye
+FROM golang:1.25.2
 
 COPY go.mod go.mod
 COPY go.sum go.sum
@@ -6,6 +6,7 @@ COPY go.sum go.sum
 RUN go mod download
 
 COPY ent ent
+COPY cmd/ cmd/
 
 COPY main.go main.go
 
