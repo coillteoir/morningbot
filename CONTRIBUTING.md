@@ -35,4 +35,4 @@
 - Implementing Planned features.
 - Implementing CI/CD pipelines.
 - Changing structure of repo.
-- Rewriting large chunks of code to address some problems.
+- Rewriting large chunks of core logic.

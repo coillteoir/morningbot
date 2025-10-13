@@ -1,9 +1,10 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
-	"time"
 )
 
 // Player holds the schema definition for the Player entity.
