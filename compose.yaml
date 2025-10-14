@@ -6,3 +6,5 @@ services:
     build:
       context: .
       dockerfile: Containerfile
+    volumes:
+    - .:/root

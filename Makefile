@@ -1,5 +1,5 @@
 build: fmt generate
-	go build -o morningbot main.go
+	CGO_ENABLED=0 go build -o morningbot main.go
 
 generate:
 	go generate ./...

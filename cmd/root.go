@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"context"
+	"database/sql"
+	"database/sql/driver"
 	"fmt"
 	"log/slog"
 	"os"
@@ -14,7 +16,7 @@ import (
 	"github.com/coillteoir/morningbot/ent/player"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/goccy/go-yaml"
-	_ "github.com/mattn/go-sqlite3"
+	"modernc.org/sqlite"
 
 	"github.com/spf13/cobra"
 )
@@ -67,6 +69,8 @@ to quickly create a Cobra application.`,
 			logger.Error("setting timezone env:", err)
 			return err
 		}
+
+		setUpDriver()
 
 		client, err := ent.Open("sqlite3", "file:leaderboard.db?_fk=1")
 		if err != nil {
@@ -226,14 +230,30 @@ func Execute() {
 	}
 }
 
+type sqlite3Driver struct {
+	*sqlite.Driver
+}
+
+type sqlite3DriverConn interface {
+	Exec(string, []driver.Value) (driver.Result, error)
+}
+
+func (d sqlite3Driver) Open(name string) (conn driver.Conn, err error) {
+	conn, err = d.Driver.Open(name)
+	if err != nil {
+		return
+	}
+	_, err = conn.(sqlite3DriverConn).Exec("PRAGMA foreign_keys = ON;", nil)
+	if err != nil {
+		_ = conn.Close()
+	}
+	return
+}
+
+func setUpDriver() {
+	sql.Register("sqlite3", sqlite3Driver{Driver: &sqlite.Driver{}})
+}
+
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.morningbot.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

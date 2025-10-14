@@ -4,3 +4,4 @@ morningbot
 .git/
 token
 *.db
+.env
