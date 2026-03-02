@@ -99,10 +99,11 @@ to quickly create a Cobra application.`,
 			content := message.Content
 			logger.Info(message.Content)
 
+			//Easter Egg Phrases Checker
 			newContent := strings.ToLower(content)
 
 			for phrase, emoji := range config.EasterEggPhrases {
-				if !strings.Contains(phrase, newContent) {
+				if !strings.Contains(newContent, phrase) {
 					continue
 				}
 
