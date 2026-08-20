@@ -35,6 +35,59 @@ type Config struct {
 	EasterEggPhrases   map[string]string `yaml:"easterEggPhrases"`
 }
 
+// keyConfigured reports whether an API key has been supplied.
+func keyConfigured(key string) bool {
+	return strings.TrimSpace(key) != ""
+}
+
+// buildMorningEmbeds builds the embeds for the scheduled greeting message.
+// The greeting is always included; news and weather are only appended when
+// their API keys are configured, so a missing or invalid key only removes
+// that section instead of blocking the whole message (issue #49).
+func buildMorningEmbeds(cfg Config, logger *slog.Logger) []*discordgo.MessageEmbed {
+	embeds := []*discordgo.MessageEmbed{
+		{
+			Title: "Good morning",
+		},
+	}
+
+	if news, err := fetchNewsEmbed(cfg); err != nil {
+		logger.Warn("skipping news in morning message", "err", err)
+	} else if news != nil {
+		embeds = append(embeds, news)
+	}
+
+	if weather, err := fetchWeatherEmbed(cfg); err != nil {
+		logger.Warn("skipping weather in morning message", "err", err)
+	} else if weather != nil {
+		embeds = append(embeds, weather)
+	}
+
+	return embeds
+}
+
+// fetchNewsEmbed fetches the latest news as an embed. It returns an error when
+// the news API key is not configured so the caller can degrade gracefully
+// instead of failing the whole message.
+func fetchNewsEmbed(cfg Config) (*discordgo.MessageEmbed, error) {
+	if !keyConfigured(cfg.NewsAPIKey) {
+		return nil, fmt.Errorf("news API key not configured")
+	}
+	// Wire up a real news fetch using cfg.NewsAPIKey here (issue #49).
+	return nil, nil
+}
+
+// fetchWeatherEmbed fetches the current weather as an embed. It returns an
+// error when the weather API key is not configured so the caller can degrade
+// gracefully instead of failing the whole message.
+func fetchWeatherEmbed(cfg Config) (*discordgo.MessageEmbed, error) {
+	if !keyConfigured(cfg.WeatherAPIKey) {
+		return nil, fmt.Errorf("weather API key not configured")
+	}
+	// Wire up a real weather fetch using cfg.WeatherAPIKey here (issue #49).
+	return nil, nil
+}
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "morningbot",
@@ -188,11 +241,7 @@ to quickly create a Cobra application.`,
 				_, err := session.ChannelMessageSendComplex(
 					config.ChannelID,
 					&discordgo.MessageSend{
-						Embeds: []*discordgo.MessageEmbed{
-							{
-								Title: "Good morning",
-							},
-						},
+						Embeds: buildMorningEmbeds(config, logger),
 					},
 				)
 				if err != nil {
